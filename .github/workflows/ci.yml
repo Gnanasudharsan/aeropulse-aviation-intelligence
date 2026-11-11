@@ -135,7 +135,7 @@ jobs:
       - name: Fetch Microsoft report schemas
         run: |
           git clone -q --depth 1 --filter=blob:none --sparse https://github.com/microsoft/json-schemas.git /tmp/json-schemas
-          git -C /tmp/json-schemas sparse-checkout set fabric/item/report
+          git -C /tmp/json-schemas sparse-checkout set fabric/item/report fabric/gitIntegration
           curl -sSfL -o /tmp/reportThemeSchema.json \
             "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.159.json"
       - name: Regenerate (must match committed files) and validate

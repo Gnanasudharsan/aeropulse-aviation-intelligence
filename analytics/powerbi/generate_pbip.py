@@ -448,6 +448,24 @@ def main() -> None:
         ),
     )
     write(sm / "definition.pbism", json.dumps({"version": "4.0", "settings": {}}, indent=2))
+    # Fabric/Power BI Git integration metadata: lets a workspace connected to this GitHub folder
+    # create the semantic model and report directly from the repository (no Power BI Desktop).
+    for folder, item_type in ((sm, "SemanticModel"), (rp, "Report")):
+        write(
+            folder / ".platform",
+            json.dumps(
+                {
+                    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+                    "metadata": {
+                        "type": item_type,
+                        "displayName": "AeroPulse Airport Performance",
+                        "description": "BTS on-time performance for 50 U.S. airports (AeroPulse).",
+                    },
+                    "config": {"version": "2.0", "logicalId": tag("platform", item_type)},
+                },
+                indent=2,
+            ),
+        )
     write(sm / "definition" / "database.tmdl", "database\n\tcompatibilityLevel: 1600\n")
     write(
         sm / "definition" / "model.tmdl",

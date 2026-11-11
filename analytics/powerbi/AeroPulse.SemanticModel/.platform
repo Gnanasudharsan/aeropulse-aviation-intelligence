@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "AeroPulse Airport Performance",
+    "description": "BTS on-time performance for 50 U.S. airports (AeroPulse)."
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "34e2eadc-d657-560b-95e6-f7cabe42da60"
+  }
+}

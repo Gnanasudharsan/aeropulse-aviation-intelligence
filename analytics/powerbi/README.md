@@ -29,6 +29,21 @@ until the report is opened in Power BI.
 4. **Seasonal and Temporal Insights** — on-time by calendar month × year, by weekday, by
    scheduled local hour, and by reporting carrier.
 
+## Publish without Windows (Power BI Git integration, browser only)
+
+Each item folder carries a `.platform` file (Fabric Git format), so a Power BI workspace can
+create the semantic model and report straight from this repository:
+
+1. app.powerbi.com → **Workspaces → New workspace** (license mode: *Fabric trial* or
+   *Premium per user* — Git integration needs one of these).
+2. Workspace **settings → Git integration → GitHub** → connect your GitHub account → repository
+   `aeropulse-aviation-intelligence`, branch `main`, folder `analytics/powerbi` → **Connect and sync**.
+3. Semantic model **AeroPulse Airport Performance → Settings → Data source credentials** → each
+   web source: *Anonymous*, privacy *Public* → **Refresh now**.
+4. Open the report → **File → Embed report → Publish to web (public)** (needs the tenant setting
+   enabled by your admin) → copy the `https://app.powerbi.com/view?r=…` URL into
+   `NEXT_PUBLIC_POWERBI_REPORT_URL`.
+
 ## Finish the report (Windows, Power BI Desktop)
 
 1. Clone the repository (or copy `analytics/powerbi/`) to a Windows machine.

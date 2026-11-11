@@ -55,7 +55,7 @@ def schema_registry(schemas_root: Path) -> Registry:
 def validate_json(schemas_root: Path, theme_schema: Path) -> list[str]:
     registry = schema_registry(schemas_root)
     errors: list[str] = []
-    files = [*sorted(RP.rglob("*.json")), RP / "definition.pbir"]
+    files = [*sorted(RP.rglob("*.json")), RP / "definition.pbir", RP / ".platform", SM.parent / ".platform"]
     for f in files:
         data = json.loads(f.read_text())
         uri = data.get("$schema")
