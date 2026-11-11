@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     faa_poll_seconds: int = 300
     metar_poll_seconds: int = 600
     taf_poll_seconds: int = 1800
+    risk_poll_seconds: int = 600
     bronze_retention_days: int = 7
 
     @field_validator("cors_allow_origins", mode="before")

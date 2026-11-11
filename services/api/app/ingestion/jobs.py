@@ -480,6 +480,43 @@ async def run_taf_job(
     return summary
 
 
+async def run_risk_job(
+    client: httpx.AsyncClient | None = None, trigger: str = "schedule"
+) -> RunSummary:
+    """Compute the rules-based risk indicator (and model output, if validated) for all airports."""
+    from app.services import risk_job
+
+    run_id = _start("risk", trigger)
+
+    def compute() -> RunSummary:
+        now = _now()
+        with session_scope() as ses:
+            rows = risk_job.compute_all(ses, now)
+            n = risk_job.persist(ses, rows)
+            details = {
+                "categories": {
+                    c: sum(1 for r in rows if r["category"] == c)
+                    for c in ("low", "moderate", "elevated", "high")
+                },
+                "model_scored": sum(1 for r in rows if r["model_probability"] is not None),
+            }
+            db.finish_run(
+                ses, run_id, status="success", fetched=len(rows), inserted=n, details=details
+            )
+            return RunSummary("risk", run_id, "success", len(rows), n, 0, 0, None, details)
+
+    try:
+        summary = await asyncio.to_thread(compute)
+    except Exception as exc:
+        msg = f"{type(exc).__name__}: {exc}"
+        with session_scope() as ses:
+            db.finish_run(ses, run_id, status="failed", error=msg)
+        log.error("risk_failed", run_id=run_id, error=msg)
+        return RunSummary("risk", run_id, "failed", error=msg)
+    log.info("risk_complete", run_id=run_id, scored=summary.inserted)
+    return summary
+
+
 def run_maintenance() -> int:
     with session_scope() as s:
         purged = db.purge_bronze(s, get_settings().bronze_retention_days)
@@ -487,4 +524,4 @@ def run_maintenance() -> int:
     return purged
 
 
-JOBS = {"faa": run_faa_job, "metar": run_metar_job, "taf": run_taf_job}
+JOBS = {"faa": run_faa_job, "metar": run_metar_job, "taf": run_taf_job, "risk": run_risk_job}

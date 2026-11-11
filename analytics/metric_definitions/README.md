@@ -64,7 +64,10 @@ Denominators exclude nothing unless stated.
 | **Delay-cause minutes** | Sum of `CarrierDelay`, `WeatherDelay`, `NASDelay`, `SecurityDelay`, `LateAircraftDelay` (reported only for arrivals delayed ≥ 15 min). Shares are of total cause minutes. These are carrier-reported attributions, not proven causes. |
 | **MoM / YoY change** | Difference in the measure vs. the same measure for the previous month / the same month one year earlier; blank when the comparison period is outside the loaded data. |
 
-## Risk indicator (Phase 6)
+## Risk indicator
 
-Defined in `docs/dashboards/risk.md` when implemented. A risk score is not a confirmed
-delay and is always shown with its model version and timestamp.
+Defined in [`docs/dashboards/risk.md`](../../docs/dashboards/risk.md): a rules-based score
+(`rules-v1`, 0–100) from FAA-reported state, observed METAR, TAF for the next 6 hours and the
+BTS month × local-hour baseline, plus — only when validated on a chronological hold-out — a
+logistic-regression probability that the airport-hour is disrupted. A risk score is not a
+confirmed delay and is always shown with its method/model version and computation timestamp.

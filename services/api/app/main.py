@@ -16,7 +16,7 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
 from app import __version__
-from app.api.v1 import airports, analytics, operations, system, weather
+from app.api.v1 import airports, analytics, operations, risk, system, weather
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.core.ratelimit import RateLimitMiddleware
@@ -115,6 +115,7 @@ def create_app() -> FastAPI:
         airports.router,
         operations.router,
         weather.router,
+        risk.router,
     ):
         app.include_router(router, prefix="/api/v1")
 

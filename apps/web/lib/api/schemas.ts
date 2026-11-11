@@ -343,3 +343,47 @@ export const Analytics = z.object({
 });
 export type Analytics = z.infer<typeof Analytics>;
 
+// --------------------------------------------------------------------------- risk (derived)
+
+export const RiskComponent = z.object({
+  key: z.string(),
+  label: z.string(),
+  points: z.number(),
+  max_points: z.number(),
+  detail: z.string(),
+  source: z.string(),
+});
+export type RiskComponent = z.infer<typeof RiskComponent>;
+
+export const RiskScore = z.object({
+  airport_iata: z.string(),
+  name: z.string().nullable().optional(),
+  computed_at: ts,
+  method_version: z.string(),
+  score: z.number(),
+  category: z.enum(["low", "moderate", "elevated", "high"]),
+  components: z.array(RiskComponent),
+  missing_inputs: z.array(z.string()),
+  model_version: z.string().nullable(),
+  model_probability: z.number().nullable(),
+  model_contributions: z.array(z.record(z.string(), z.unknown())).nullable(),
+  inputs_as_of: z.record(z.string(), z.unknown()),
+});
+export type RiskScore = z.infer<typeof RiskScore>;
+
+export const RiskOverview = z.object({
+  method_version: z.string(),
+  computed_at: tsN,
+  is_stale: z.boolean(),
+  category_counts: z.record(z.string(), z.number()),
+  airports: z.array(RiskScore),
+  model: z.record(z.string(), z.unknown()).nullable(),
+  disclaimer: z.string(),
+});
+export type RiskOverview = z.infer<typeof RiskOverview>;
+
+export const AirportRisk = z.object({
+  latest: RiskScore.nullable(),
+  history: z.array(z.object({ computed_at: ts, score: z.number(), category: z.string(), model_probability: z.number().nullable() })),
+});
+export type AirportRisk = z.infer<typeof AirportRisk>;

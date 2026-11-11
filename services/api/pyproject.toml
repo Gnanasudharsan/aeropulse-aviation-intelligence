@@ -45,6 +45,8 @@ ignore = ["S101", "S311", "RUF012"]
 "migrations/**" = ["S608", "E501"]
 # Long, readable SQL literals; all values are bound parameters.
 "app/api/v1/analytics.py" = ["E501", "S608"]
+"app/api/v1/risk.py" = ["E501"]
+"app/services/risk_job.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"

@@ -84,7 +84,7 @@ def system_status(db: DbSession, response: Response) -> Envelope[SystemStatusOut
     include_in_schema=True,
 )
 async def trigger_ingest(
-    job: Literal["faa", "metar", "taf", "all"],
+    job: Literal["faa", "metar", "taf", "risk", "all"],
     authorization: Annotated[str | None, Header()] = None,
 ) -> dict[str, object]:
     token = get_settings().ingest_trigger_token

@@ -14,7 +14,13 @@ from app.core.logging import get_logger
 from app.db.seed import seed_airports
 from app.db.session import session_scope
 from app.ingestion.http import build_client
-from app.ingestion.jobs import run_faa_job, run_maintenance, run_metar_job, run_taf_job
+from app.ingestion.jobs import (
+    run_faa_job,
+    run_maintenance,
+    run_metar_job,
+    run_risk_job,
+    run_taf_job,
+)
 
 log = get_logger(__name__)
 
@@ -47,6 +53,11 @@ async def run_worker() -> None:
         kwargs={"client": client},
         id="taf",
     )
+    scheduler.add_job(
+        run_risk_job,
+        IntervalTrigger(seconds=s.risk_poll_seconds, jitter=20),
+        id="risk",
+    )
     scheduler.add_job(run_maintenance, CronTrigger(hour=3, minute=17), id="purge_bronze")
 
     stop = asyncio.Event()
@@ -62,6 +73,7 @@ async def run_worker() -> None:
         run_metar_job(client=client, trigger="startup"),
         run_taf_job(client=client, trigger="startup"),
     )
+    await run_risk_job(trigger="startup")
     await stop.wait()
     log.info("worker_stopping")
     scheduler.shutdown(wait=False)

@@ -9,6 +9,8 @@ import {
   AdvisoryDetail,
   Advisory,
   Analytics,
+  AirportRisk,
+  RiskOverview,
   AirportDetail,
   AirportSummary,
   AirportWeather,
@@ -187,3 +189,19 @@ export function useAnalytics(params: AnalyticsParams, airport?: string) {
   });
 }
 
+export function useRiskOverview() {
+  return useQuery({
+    queryKey: ["risk"],
+    queryFn: ({ signal }) => apiGet("/api/v1/risk/airports", RiskOverview, undefined, signal),
+    refetchInterval: LIVE_REFRESH_MS * 2,
+  });
+}
+
+export function useAirportRisk(code: string | null, hours = 48) {
+  return useQuery({
+    queryKey: ["risk", code, hours],
+    queryFn: ({ signal }) => apiGet(`/api/v1/risk/airports/${encodeURIComponent(code ?? "")}`, AirportRisk, { hours }, signal),
+    enabled: code !== null,
+    refetchInterval: LIVE_REFRESH_MS * 2,
+  });
+}
