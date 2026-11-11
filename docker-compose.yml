@@ -59,5 +59,18 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
+  web:
+    build:
+      context: ./apps/web
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        NEXT_PUBLIC_POWERBI_REPORT_URL: ${NEXT_PUBLIC_POWERBI_REPORT_URL:-}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+    profiles: ["web"] # `docker compose --profile web up` (local dev usually runs `npm run dev`)
+
 volumes:
   pgdata:

@@ -1,0 +1,237 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   AeroPulse design tokens. Components use semantic tokens only — never raw hex.
+   The product is dark-only (an operations console), so tokens are defined once.
+   --------------------------------------------------------------------------- */
+:root {
+  /* Brand */
+  --ap-bg: #0b1220;
+  --ap-bg-elevated: #0f1a2c;
+  --ap-surface: #16263e;
+  --ap-surface-2: #1c3050;
+  --ap-line: rgb(168 190 211 / 0.12);
+  --ap-line-strong: rgb(168 190 211 / 0.22);
+  --ap-text: #f3f8ff;
+  --ap-text-2: #a8bed3;
+  --ap-text-3: #7690aa;
+  --ap-accent: #3ed4e8;
+  --ap-accent-soft: rgb(62 212 232 / 0.12);
+
+  /* Status (reserved — always paired with an icon + label) */
+  --ap-ok: #49dbaa;
+  --ap-warn: #ffb454;
+  --ap-crit: #f27989;
+  --ap-unknown: #7690aa;
+
+  /* Aviation flight categories (conventional hue families, always labelled) */
+  --ap-vfr: #49dbaa;
+  --ap-mvfr: #5b9cff;
+  --ap-ifr: #f27989;
+  --ap-lifr: #d77bea;
+
+  /* Categorical chart series — validated (dataviz validator, dark, surface #16263E) */
+  --ap-series-1: #1a9db2;
+  --ap-series-2: #d9733f;
+  --ap-series-3: #9085e9;
+  --ap-series-4: #aa880a;
+  --ap-series-5: #d55181;
+  --ap-series-6: #4c9a2a;
+
+  /* shadcn semantic mapping */
+  --background: var(--ap-bg);
+  --foreground: var(--ap-text);
+  --card: var(--ap-surface);
+  --card-foreground: var(--ap-text);
+  --popover: #12203a;
+  --popover-foreground: var(--ap-text);
+  --primary: var(--ap-accent);
+  --primary-foreground: #04121a;
+  --secondary: var(--ap-surface-2);
+  --secondary-foreground: var(--ap-text);
+  --muted: var(--ap-surface-2);
+  --muted-foreground: var(--ap-text-2);
+  --accent: var(--ap-surface-2);
+  --accent-foreground: var(--ap-text);
+  --destructive: var(--ap-crit);
+  --border: var(--ap-line);
+  --input: var(--ap-line-strong);
+  --ring: var(--ap-accent);
+  --chart-1: var(--ap-series-1);
+  --chart-2: var(--ap-series-2);
+  --chart-3: var(--ap-series-3);
+  --chart-4: var(--ap-series-4);
+  --chart-5: var(--ap-series-5);
+  --radius: 0.75rem;
+  --sidebar: var(--ap-bg-elevated);
+  --sidebar-foreground: var(--ap-text);
+  --sidebar-primary: var(--ap-accent);
+  --sidebar-primary-foreground: #04121a;
+  --sidebar-accent: var(--ap-surface);
+  --sidebar-accent-foreground: var(--ap-text);
+  --sidebar-border: var(--ap-line);
+  --sidebar-ring: var(--ap-accent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* AeroPulse utilities: bg-ap-surface, text-ap-text-2, border-ap-line, … */
+  --color-ap-bg: var(--ap-bg);
+  --color-ap-bg-elevated: var(--ap-bg-elevated);
+  --color-ap-surface: var(--ap-surface);
+  --color-ap-surface-2: var(--ap-surface-2);
+  --color-ap-line: var(--ap-line);
+  --color-ap-line-strong: var(--ap-line-strong);
+  --color-ap-text: var(--ap-text);
+  --color-ap-text-2: var(--ap-text-2);
+  --color-ap-text-3: var(--ap-text-3);
+  --color-ap-accent: var(--ap-accent);
+  --color-ap-accent-soft: var(--ap-accent-soft);
+  --color-ap-ok: var(--ap-ok);
+  --color-ap-warn: var(--ap-warn);
+  --color-ap-crit: var(--ap-crit);
+  --color-ap-unknown: var(--ap-unknown);
+  --color-ap-vfr: var(--ap-vfr);
+  --color-ap-mvfr: var(--ap-mvfr);
+  --color-ap-ifr: var(--ap-ifr);
+  --color-ap-lifr: var(--ap-lifr);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+    background: var(--ap-bg);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection {
+    background: rgb(62 212 232 / 0.3);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ap-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Layered surface with a hairline highlight — the core "panel" look. */
+  .ap-panel {
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.025), transparent 40%),
+      var(--ap-surface);
+    border: 1px solid var(--ap-line);
+    border-radius: var(--radius-xl);
+    box-shadow:
+      0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+      0 12px 32px -16px rgb(0 0 0 / 0.6);
+  }
+  .ap-glass {
+    background: rgb(15 26 44 / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--ap-line);
+  }
+  .ap-grid-bg {
+    background-image:
+      linear-gradient(rgb(168 190 211 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(168 190 211 / 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .ap-eyebrow {
+    @apply text-[11px] font-medium uppercase tracking-[0.14em] text-ap-text-3;
+  }
+}
+
+/* MapLibre popup restyle */
+.maplibregl-popup-content {
+  background: #12203a !important;
+  color: var(--ap-text) !important;
+  border: 1px solid var(--ap-line-strong);
+  border-radius: 12px !important;
+  padding: 0 !important;
+  box-shadow: 0 16px 40px -12px rgb(0 0 0 / 0.7) !important;
+}
+.maplibregl-popup-tip {
+  border-top-color: #12203a !important;
+  border-bottom-color: #12203a !important;
+}
+.maplibregl-ctrl-group {
+  background: var(--ap-surface) !important;
+  border: 1px solid var(--ap-line) !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--ap-line) !important;
+}
+.maplibregl-ctrl-icon {
+  filter: invert(0.85);
+}
+.maplibregl-ctrl-attrib {
+  background: rgb(11 18 32 / 0.7) !important;
+  color: var(--ap-text-3) !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--ap-text-2) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

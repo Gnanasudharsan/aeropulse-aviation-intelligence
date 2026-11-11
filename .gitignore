@@ -44,3 +44,4 @@ data/cache/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+apps/web/public/vendor/
