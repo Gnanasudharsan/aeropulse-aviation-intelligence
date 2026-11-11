@@ -1,0 +1,3535 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "AeroPulse API",
+  "description": "Real-time U.S. airport operations and weather intelligence built on FAA NAS Status and NOAA Aviation Weather Center data. All timestamps are UTC (ISO-8601). Reported FAA events, observed weather and derived indicators are kept distinct.",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/api/v1/health": {
+   "get": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Liveness + database connectivity",
+    "operationId": "health_api_v1_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HealthOut"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/data-freshness": {
+   "get": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Data Freshness",
+    "operationId": "data_freshness_api_v1_data_freshness_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_list_SourceFreshness__"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/status": {
+   "get": {
+    "tags": [
+     "system"
+    ],
+    "summary": "System Status",
+    "operationId": "system_status_api_v1_status_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_SystemStatusOut_"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/admin/ingest/{job}": {
+   "post": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Trigger an ingestion job (bearer token; used by external cron)",
+    "operationId": "trigger_ingest_api_v1_admin_ingest__job__post",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "enum": [
+        "faa",
+        "metar",
+        "taf",
+        "all"
+       ],
+       "type": "string",
+       "title": "Job"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Trigger Ingest Api V1 Admin Ingest  Job  Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/airports": {
+   "get": {
+    "tags": [
+     "airports"
+    ],
+    "summary": "Monitored airports with live status",
+    "operationId": "list_airports_api_v1_airports_get",
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 64
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Search code, name, city or state",
+       "title": "Q"
+      },
+      "description": "Search code, name, city or state"
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "critical",
+           "warning",
+           "weather",
+           "normal",
+           "unknown"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "flight_category",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "VFR",
+           "MVFR",
+           "IFR",
+           "LIFR"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Flight Category"
+      }
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 2
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "State"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_list_AirportSummaryOut__"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/airports/{code}": {
+   "get": {
+    "tags": [
+     "airports"
+    ],
+    "summary": "Airport intelligence detail",
+    "operationId": "airport_detail_api_v1_airports__code__get",
+    "parameters": [
+     {
+      "name": "code",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "maxLength": 4,
+       "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code",
+       "title": "Code"
+      },
+      "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_AirportDetailOut_"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/airports/{code}/weather": {
+   "get": {
+    "tags": [
+     "airports"
+    ],
+    "summary": "Observation history + TAF",
+    "operationId": "airport_weather_api_v1_airports__code__weather_get",
+    "parameters": [
+     {
+      "name": "code",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "maxLength": 4,
+       "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code",
+       "title": "Code"
+      },
+      "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code"
+     },
+     {
+      "name": "hours",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 168,
+       "minimum": 1,
+       "default": 24,
+       "title": "Hours"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_AirportWeatherOut_"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/airports/{code}/advisories": {
+   "get": {
+    "tags": [
+     "airports"
+    ],
+    "summary": "FAA advisories",
+    "operationId": "airport_advisories_api_v1_airports__code__advisories_get",
+    "parameters": [
+     {
+      "name": "code",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "maxLength": 4,
+       "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code",
+       "title": "Code"
+      },
+      "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code"
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "active",
+        "inactive",
+        "all"
+       ],
+       "type": "string",
+       "default": "all",
+       "title": "State"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 200,
+       "minimum": 1,
+       "default": 50,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_list_AdvisoryOut__"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/operations/summary": {
+   "get": {
+    "tags": [
+     "operations"
+    ],
+    "summary": "National command-center summary",
+    "operationId": "summary_api_v1_operations_summary_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_OperationsSummaryOut_"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/operations/advisories": {
+   "get": {
+    "tags": [
+     "operations"
+    ],
+    "summary": "Search FAA advisories",
+    "operationId": "advisories_api_v1_operations_advisories_get",
+    "parameters": [
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "active",
+        "inactive",
+        "all"
+       ],
+       "type": "string",
+       "default": "active",
+       "title": "State"
+      }
+     },
+     {
+      "name": "airport",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 4
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Airport"
+      }
+     },
+     {
+      "name": "type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "ground_stop",
+           "ground_delay_program",
+           "airport_closure",
+           "closure_notam",
+           "arrival_delay",
+           "departure_delay",
+           "deicing"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Type"
+      }
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     },
+     {
+      "name": "until",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Until"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 64
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Q"
+      }
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "last_seen",
+        "first_seen",
+        "starts_at",
+        "airport"
+       ],
+       "type": "string",
+       "default": "last_seen",
+       "title": "Sort"
+      }
+     },
+     {
+      "name": "page",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "default": 1,
+       "title": "Page"
+      }
+     },
+     {
+      "name": "page_size",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 200,
+       "minimum": 1,
+       "default": 25,
+       "title": "Page Size"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_list_AdvisoryOut__"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/operations/advisories/{advisory_id}": {
+   "get": {
+    "tags": [
+     "operations"
+    ],
+    "summary": "Advisory Detail",
+    "operationId": "advisory_detail_api_v1_operations_advisories__advisory_id__get",
+    "parameters": [
+     {
+      "name": "advisory_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Advisory Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_AdvisoryDetailOut_"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/operations/events": {
+   "get": {
+    "tags": [
+     "operations"
+    ],
+    "summary": "Operational change log (advisory created/updated/cleared)",
+    "operationId": "events_api_v1_operations_events_get",
+    "parameters": [
+     {
+      "name": "airport",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 4
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Airport"
+      }
+     },
+     {
+      "name": "type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "ground_stop",
+           "ground_delay_program",
+           "airport_closure",
+           "closure_notam",
+           "arrival_delay",
+           "departure_delay",
+           "deicing"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Type"
+      }
+     },
+     {
+      "name": "event_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "created",
+           "updated",
+           "cleared",
+           "reopened"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Event Type"
+      }
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     },
+     {
+      "name": "until",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Until"
+      }
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "newest",
+        "oldest"
+       ],
+       "type": "string",
+       "default": "newest",
+       "title": "Sort"
+      }
+     },
+     {
+      "name": "page",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 1,
+       "default": 1,
+       "title": "Page"
+      }
+     },
+     {
+      "name": "page_size",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 50,
+       "title": "Page Size"
+      }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "json",
+        "csv"
+       ],
+       "type": "string",
+       "default": "json",
+       "title": "Format"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_list_OperationalEventOut__"
+        }
+       },
+       "text/csv": {}
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/weather/overview": {
+   "get": {
+    "tags": [
+     "weather"
+    ],
+    "summary": "National observed-weather picture",
+    "operationId": "overview_api_v1_weather_overview_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_WeatherOverviewOut_"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/weather/trends": {
+   "get": {
+    "tags": [
+     "weather"
+    ],
+    "summary": "Hourly trends for airports",
+    "operationId": "trends_api_v1_weather_trends_get",
+    "parameters": [
+     {
+      "name": "airports",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "maxLength": 40,
+       "description": "Comma-separated IATA codes (max 8)",
+       "title": "Airports"
+      },
+      "description": "Comma-separated IATA codes (max 8)"
+     },
+     {
+      "name": "hours",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 168,
+       "minimum": 1,
+       "default": 48,
+       "title": "Hours"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_list_WeatherTrendSeries__"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AdvisoryDetailOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "event_key": {
+      "type": "string",
+      "title": "Event Key"
+     },
+     "airport_code": {
+      "type": "string",
+      "title": "Airport Code"
+     },
+     "airport_iata": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Airport Iata"
+     },
+     "advisory_type": {
+      "type": "string",
+      "title": "Advisory Type"
+     },
+     "scope": {
+      "type": "string",
+      "title": "Scope"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Text"
+     },
+     "starts_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Starts At"
+     },
+     "ends_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends At"
+     },
+     "source_updated_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Updated At"
+     },
+     "avg_delay_minutes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Minutes"
+     },
+     "min_delay_minutes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Delay Minutes"
+     },
+     "max_delay_minutes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Delay Minutes"
+     },
+     "trend": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Trend"
+     },
+     "probability_of_extension": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Probability Of Extension"
+     },
+     "advisory_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Advisory Url"
+     },
+     "details": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Details"
+     },
+     "source_feed": {
+      "type": "string",
+      "title": "Source Feed"
+     },
+     "first_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "First Seen At"
+     },
+     "last_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Last Seen At"
+     },
+     "cleared_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cleared At"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active"
+     },
+     "timeline": {
+      "items": {
+       "$ref": "#/components/schemas/OperationalEventOut"
+      },
+      "type": "array",
+      "title": "Timeline"
+     },
+     "source_url": {
+      "type": "string",
+      "title": "Source Url",
+      "default": "https://nasstatus.faa.gov/"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "event_key",
+     "airport_code",
+     "airport_iata",
+     "advisory_type",
+     "scope",
+     "reason",
+     "text",
+     "starts_at",
+     "ends_at",
+     "source_updated_at",
+     "avg_delay_minutes",
+     "min_delay_minutes",
+     "max_delay_minutes",
+     "trend",
+     "probability_of_extension",
+     "advisory_url",
+     "details",
+     "source_feed",
+     "first_seen_at",
+     "last_seen_at",
+     "cleared_at",
+     "is_active",
+     "timeline"
+    ],
+    "title": "AdvisoryDetailOut"
+   },
+   "AdvisoryOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "event_key": {
+      "type": "string",
+      "title": "Event Key"
+     },
+     "airport_code": {
+      "type": "string",
+      "title": "Airport Code"
+     },
+     "airport_iata": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Airport Iata"
+     },
+     "advisory_type": {
+      "type": "string",
+      "title": "Advisory Type"
+     },
+     "scope": {
+      "type": "string",
+      "title": "Scope"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Text"
+     },
+     "starts_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Starts At"
+     },
+     "ends_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends At"
+     },
+     "source_updated_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Updated At"
+     },
+     "avg_delay_minutes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Minutes"
+     },
+     "min_delay_minutes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Delay Minutes"
+     },
+     "max_delay_minutes": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Delay Minutes"
+     },
+     "trend": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Trend"
+     },
+     "probability_of_extension": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Probability Of Extension"
+     },
+     "advisory_url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Advisory Url"
+     },
+     "details": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Details"
+     },
+     "source_feed": {
+      "type": "string",
+      "title": "Source Feed"
+     },
+     "first_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "First Seen At"
+     },
+     "last_seen_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Last Seen At"
+     },
+     "cleared_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cleared At"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "event_key",
+     "airport_code",
+     "airport_iata",
+     "advisory_type",
+     "scope",
+     "reason",
+     "text",
+     "starts_at",
+     "ends_at",
+     "source_updated_at",
+     "avg_delay_minutes",
+     "min_delay_minutes",
+     "max_delay_minutes",
+     "trend",
+     "probability_of_extension",
+     "advisory_url",
+     "details",
+     "source_feed",
+     "first_seen_at",
+     "last_seen_at",
+     "cleared_at",
+     "is_active"
+    ],
+    "title": "AdvisoryOut"
+   },
+   "AirportDetailOut": {
+    "properties": {
+     "iata_code": {
+      "type": "string",
+      "title": "Iata Code"
+     },
+     "icao_code": {
+      "type": "string",
+      "title": "Icao Code"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "city": {
+      "type": "string",
+      "title": "City"
+     },
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "latitude": {
+      "type": "number",
+      "title": "Latitude"
+     },
+     "longitude": {
+      "type": "number",
+      "title": "Longitude"
+     },
+     "timezone": {
+      "type": "string",
+      "title": "Timezone"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "critical",
+       "warning",
+       "weather",
+       "normal",
+       "unknown"
+      ],
+      "title": "Status"
+     },
+     "status_reason": {
+      "type": "string",
+      "title": "Status Reason"
+     },
+     "weather_risk": {
+      "type": "string",
+      "enum": [
+       "low",
+       "elevated",
+       "high",
+       "severe",
+       "unknown"
+      ],
+      "title": "Weather Risk"
+     },
+     "weather_observed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weather Observed At"
+     },
+     "weather_is_stale": {
+      "type": "boolean",
+      "title": "Weather Is Stale"
+     },
+     "flight_category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flight Category"
+     },
+     "visibility_sm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Visibility Sm"
+     },
+     "ceiling_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ceiling Ft"
+     },
+     "wind_speed_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Speed Kt"
+     },
+     "wind_gust_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Gust Kt"
+     },
+     "temperature_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temperature C"
+     },
+     "wx_string": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wx String"
+     },
+     "active_advisories": {
+      "type": "integer",
+      "title": "Active Advisories"
+     },
+     "has_ground_stop": {
+      "type": "boolean",
+      "title": "Has Ground Stop"
+     },
+     "has_ground_delay_program": {
+      "type": "boolean",
+      "title": "Has Ground Delay Program"
+     },
+     "has_full_closure": {
+      "type": "boolean",
+      "title": "Has Full Closure"
+     },
+     "has_reported_delay": {
+      "type": "boolean",
+      "title": "Has Reported Delay"
+     },
+     "has_partial_closure": {
+      "type": "boolean",
+      "title": "Has Partial Closure"
+     },
+     "elevation_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Elevation Ft"
+     },
+     "weather_risk_factors": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Weather Risk Factors"
+     },
+     "latest_weather": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/WeatherObservationOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "active_advisory_list": {
+      "items": {
+       "$ref": "#/components/schemas/AdvisoryOut"
+      },
+      "type": "array",
+      "title": "Active Advisory List"
+     },
+     "forecast": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ForecastOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "runway_config": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RunwayConfigOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "iata_code",
+     "icao_code",
+     "name",
+     "city",
+     "state",
+     "latitude",
+     "longitude",
+     "timezone",
+     "status",
+     "status_reason",
+     "weather_risk",
+     "weather_observed_at",
+     "weather_is_stale",
+     "flight_category",
+     "visibility_sm",
+     "ceiling_ft",
+     "wind_speed_kt",
+     "wind_gust_kt",
+     "temperature_c",
+     "wx_string",
+     "active_advisories",
+     "has_ground_stop",
+     "has_ground_delay_program",
+     "has_full_closure",
+     "has_reported_delay",
+     "has_partial_closure",
+     "elevation_ft",
+     "weather_risk_factors",
+     "latest_weather",
+     "active_advisory_list",
+     "forecast",
+     "runway_config"
+    ],
+    "title": "AirportDetailOut"
+   },
+   "AirportSummaryOut": {
+    "properties": {
+     "iata_code": {
+      "type": "string",
+      "title": "Iata Code"
+     },
+     "icao_code": {
+      "type": "string",
+      "title": "Icao Code"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "city": {
+      "type": "string",
+      "title": "City"
+     },
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "latitude": {
+      "type": "number",
+      "title": "Latitude"
+     },
+     "longitude": {
+      "type": "number",
+      "title": "Longitude"
+     },
+     "timezone": {
+      "type": "string",
+      "title": "Timezone"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "critical",
+       "warning",
+       "weather",
+       "normal",
+       "unknown"
+      ],
+      "title": "Status"
+     },
+     "status_reason": {
+      "type": "string",
+      "title": "Status Reason"
+     },
+     "weather_risk": {
+      "type": "string",
+      "enum": [
+       "low",
+       "elevated",
+       "high",
+       "severe",
+       "unknown"
+      ],
+      "title": "Weather Risk"
+     },
+     "weather_observed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weather Observed At"
+     },
+     "weather_is_stale": {
+      "type": "boolean",
+      "title": "Weather Is Stale"
+     },
+     "flight_category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flight Category"
+     },
+     "visibility_sm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Visibility Sm"
+     },
+     "ceiling_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ceiling Ft"
+     },
+     "wind_speed_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Speed Kt"
+     },
+     "wind_gust_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Gust Kt"
+     },
+     "temperature_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temperature C"
+     },
+     "wx_string": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wx String"
+     },
+     "active_advisories": {
+      "type": "integer",
+      "title": "Active Advisories"
+     },
+     "has_ground_stop": {
+      "type": "boolean",
+      "title": "Has Ground Stop"
+     },
+     "has_ground_delay_program": {
+      "type": "boolean",
+      "title": "Has Ground Delay Program"
+     },
+     "has_full_closure": {
+      "type": "boolean",
+      "title": "Has Full Closure"
+     },
+     "has_reported_delay": {
+      "type": "boolean",
+      "title": "Has Reported Delay"
+     },
+     "has_partial_closure": {
+      "type": "boolean",
+      "title": "Has Partial Closure"
+     }
+    },
+    "type": "object",
+    "required": [
+     "iata_code",
+     "icao_code",
+     "name",
+     "city",
+     "state",
+     "latitude",
+     "longitude",
+     "timezone",
+     "status",
+     "status_reason",
+     "weather_risk",
+     "weather_observed_at",
+     "weather_is_stale",
+     "flight_category",
+     "visibility_sm",
+     "ceiling_ft",
+     "wind_speed_kt",
+     "wind_gust_kt",
+     "temperature_c",
+     "wx_string",
+     "active_advisories",
+     "has_ground_stop",
+     "has_ground_delay_program",
+     "has_full_closure",
+     "has_reported_delay",
+     "has_partial_closure"
+    ],
+    "title": "AirportSummaryOut"
+   },
+   "AirportWeatherOut": {
+    "properties": {
+     "airport": {
+      "type": "string",
+      "title": "Airport"
+     },
+     "observations": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherObservationOut"
+      },
+      "type": "array",
+      "title": "Observations"
+     },
+     "hourly": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherHourOut"
+      },
+      "type": "array",
+      "title": "Hourly"
+     },
+     "forecast": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ForecastOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "airport",
+     "observations",
+     "hourly",
+     "forecast"
+    ],
+    "title": "AirportWeatherOut"
+   },
+   "CategoryCount": {
+    "properties": {
+     "category": {
+      "type": "string",
+      "title": "Category"
+     },
+     "airports": {
+      "type": "integer",
+      "title": "Airports"
+     }
+    },
+    "type": "object",
+    "required": [
+     "category",
+     "airports"
+    ],
+    "title": "CategoryCount"
+   },
+   "CloudLayer": {
+    "properties": {
+     "cover": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cover"
+     },
+     "base_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Base Ft"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cover",
+     "base_ft"
+    ],
+    "title": "CloudLayer"
+   },
+   "Envelope_AdvisoryDetailOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/AdvisoryDetailOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[AdvisoryDetailOut]"
+   },
+   "Envelope_AirportDetailOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/AirportDetailOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[AirportDetailOut]"
+   },
+   "Envelope_AirportWeatherOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/AirportWeatherOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[AirportWeatherOut]"
+   },
+   "Envelope_OperationsSummaryOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/OperationsSummaryOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[OperationsSummaryOut]"
+   },
+   "Envelope_SystemStatusOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/SystemStatusOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[SystemStatusOut]"
+   },
+   "Envelope_WeatherOverviewOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/WeatherOverviewOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[WeatherOverviewOut]"
+   },
+   "Envelope_list_AdvisoryOut__": {
+    "properties": {
+     "data": {
+      "items": {
+       "$ref": "#/components/schemas/AdvisoryOut"
+      },
+      "type": "array",
+      "title": "Data"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[list[AdvisoryOut]]"
+   },
+   "Envelope_list_AirportSummaryOut__": {
+    "properties": {
+     "data": {
+      "items": {
+       "$ref": "#/components/schemas/AirportSummaryOut"
+      },
+      "type": "array",
+      "title": "Data"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[list[AirportSummaryOut]]"
+   },
+   "Envelope_list_OperationalEventOut__": {
+    "properties": {
+     "data": {
+      "items": {
+       "$ref": "#/components/schemas/OperationalEventOut"
+      },
+      "type": "array",
+      "title": "Data"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[list[OperationalEventOut]]"
+   },
+   "Envelope_list_SourceFreshness__": {
+    "properties": {
+     "data": {
+      "items": {
+       "$ref": "#/components/schemas/SourceFreshness"
+      },
+      "type": "array",
+      "title": "Data"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[list[SourceFreshness]]"
+   },
+   "Envelope_list_WeatherTrendSeries__": {
+    "properties": {
+     "data": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherTrendSeries"
+      },
+      "type": "array",
+      "title": "Data"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[list[WeatherTrendSeries]]"
+   },
+   "ForecastOut": {
+    "properties": {
+     "station_icao": {
+      "type": "string",
+      "title": "Station Icao"
+     },
+     "issued_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Issued At"
+     },
+     "valid_from": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Valid From"
+     },
+     "valid_to": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Valid To"
+     },
+     "raw_text": {
+      "type": "string",
+      "title": "Raw Text"
+     },
+     "is_amendment": {
+      "type": "boolean",
+      "title": "Is Amendment"
+     },
+     "ingested_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Ingested At"
+     },
+     "periods": {
+      "items": {
+       "$ref": "#/components/schemas/ForecastPeriodOut"
+      },
+      "type": "array",
+      "title": "Periods"
+     }
+    },
+    "type": "object",
+    "required": [
+     "station_icao",
+     "issued_at",
+     "valid_from",
+     "valid_to",
+     "raw_text",
+     "is_amendment",
+     "ingested_at",
+     "periods"
+    ],
+    "title": "ForecastOut"
+   },
+   "ForecastPeriodOut": {
+    "properties": {
+     "seq": {
+      "type": "integer",
+      "title": "Seq"
+     },
+     "time_from": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Time From"
+     },
+     "time_to": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Time To"
+     },
+     "change_indicator": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change Indicator"
+     },
+     "probability": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Probability"
+     },
+     "wind_dir_deg": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Dir Deg"
+     },
+     "wind_speed_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Speed Kt"
+     },
+     "wind_gust_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Gust Kt"
+     },
+     "visibility_sm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Visibility Sm"
+     },
+     "visibility_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Visibility Text"
+     },
+     "wx_string": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wx String"
+     },
+     "ceiling_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ceiling Ft"
+     },
+     "flight_category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flight Category"
+     }
+    },
+    "type": "object",
+    "required": [
+     "seq",
+     "time_from",
+     "time_to",
+     "change_indicator",
+     "probability",
+     "wind_dir_deg",
+     "wind_speed_kt",
+     "wind_gust_kt",
+     "visibility_sm",
+     "visibility_text",
+     "wx_string",
+     "ceiling_ft",
+     "flight_category"
+    ],
+    "title": "ForecastPeriodOut"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "HealthOut": {
+    "properties": {
+     "status": {
+      "type": "string",
+      "enum": [
+       "ok",
+       "degraded"
+      ],
+      "title": "Status"
+     },
+     "version": {
+      "type": "string",
+      "title": "Version"
+     },
+     "environment": {
+      "type": "string",
+      "title": "Environment"
+     },
+     "database": {
+      "type": "string",
+      "enum": [
+       "ok",
+       "unavailable"
+      ],
+      "title": "Database"
+     },
+     "time": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Time"
+     }
+    },
+    "type": "object",
+    "required": [
+     "status",
+     "version",
+     "environment",
+     "database",
+     "time"
+    ],
+    "title": "HealthOut"
+   },
+   "IngestionRunOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "job": {
+      "type": "string",
+      "title": "Job"
+     },
+     "trigger": {
+      "type": "string",
+      "title": "Trigger"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Started At"
+     },
+     "finished_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Finished At"
+     },
+     "records_fetched": {
+      "type": "integer",
+      "title": "Records Fetched"
+     },
+     "records_inserted": {
+      "type": "integer",
+      "title": "Records Inserted"
+     },
+     "records_updated": {
+      "type": "integer",
+      "title": "Records Updated"
+     },
+     "records_rejected": {
+      "type": "integer",
+      "title": "Records Rejected"
+     },
+     "error_message": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Error Message"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "job",
+     "trigger",
+     "status",
+     "started_at",
+     "finished_at",
+     "records_fetched",
+     "records_inserted",
+     "records_updated",
+     "records_rejected",
+     "error_message"
+    ],
+    "title": "IngestionRunOut"
+   },
+   "Meta": {
+    "properties": {
+     "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Generated At"
+     },
+     "page": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Page"
+     },
+     "page_size": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Page Size"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total"
+     },
+     "total_pages": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Pages"
+     }
+    },
+    "type": "object",
+    "required": [
+     "generated_at"
+    ],
+    "title": "Meta"
+   },
+   "OperationalEventOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "advisory_id": {
+      "type": "integer",
+      "title": "Advisory Id"
+     },
+     "event_type": {
+      "type": "string",
+      "title": "Event Type"
+     },
+     "airport_code": {
+      "type": "string",
+      "title": "Airport Code"
+     },
+     "advisory_type": {
+      "type": "string",
+      "title": "Advisory Type"
+     },
+     "detected_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Detected At"
+     },
+     "source_updated_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Updated At"
+     },
+     "changes": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Changes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "advisory_id",
+     "event_type",
+     "airport_code",
+     "advisory_type",
+     "detected_at",
+     "source_updated_at",
+     "changes"
+    ],
+    "title": "OperationalEventOut"
+   },
+   "OperationsSummaryOut": {
+    "properties": {
+     "monitored_airports": {
+      "type": "integer",
+      "title": "Monitored Airports"
+     },
+     "airports_with_active_advisories": {
+      "type": "integer",
+      "title": "Airports With Active Advisories"
+     },
+     "airports_with_disruptions": {
+      "type": "integer",
+      "title": "Airports With Disruptions"
+     },
+     "active_ground_stops": {
+      "type": "integer",
+      "title": "Active Ground Stops"
+     },
+     "active_ground_delay_programs": {
+      "type": "integer",
+      "title": "Active Ground Delay Programs"
+     },
+     "active_full_closures": {
+      "type": "integer",
+      "title": "Active Full Closures"
+     },
+     "active_reported_delays": {
+      "type": "integer",
+      "title": "Active Reported Delays"
+     },
+     "active_partial_closures": {
+      "type": "integer",
+      "title": "Active Partial Closures"
+     },
+     "status_counts": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Status Counts"
+     },
+     "flight_categories": {
+      "items": {
+       "$ref": "#/components/schemas/CategoryCount"
+      },
+      "type": "array",
+      "title": "Flight Categories"
+     },
+     "changes_last_hour": {
+      "type": "integer",
+      "title": "Changes Last Hour"
+     },
+     "recent_changes": {
+      "items": {
+       "$ref": "#/components/schemas/OperationalEventOut"
+      },
+      "type": "array",
+      "title": "Recent Changes"
+     },
+     "faa_health": {
+      "type": "string",
+      "enum": [
+       "healthy",
+       "delayed",
+       "stale",
+       "unavailable"
+      ],
+      "title": "Faa Health"
+     },
+     "weather_health": {
+      "type": "string",
+      "enum": [
+       "healthy",
+       "delayed",
+       "stale",
+       "unavailable"
+      ],
+      "title": "Weather Health"
+     },
+     "faa_last_success_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Faa Last Success At"
+     },
+     "weather_last_success_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Weather Last Success At"
+     },
+     "latest_observation_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Latest Observation At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "monitored_airports",
+     "airports_with_active_advisories",
+     "airports_with_disruptions",
+     "active_ground_stops",
+     "active_ground_delay_programs",
+     "active_full_closures",
+     "active_reported_delays",
+     "active_partial_closures",
+     "status_counts",
+     "flight_categories",
+     "changes_last_hour",
+     "recent_changes",
+     "faa_health",
+     "weather_health",
+     "faa_last_success_at",
+     "weather_last_success_at",
+     "latest_observation_at"
+    ],
+    "title": "OperationsSummaryOut"
+   },
+   "QualityCheckOut": {
+    "properties": {
+     "source": {
+      "type": "string",
+      "title": "Source"
+     },
+     "check_name": {
+      "type": "string",
+      "title": "Check Name"
+     },
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "observed_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Observed Value"
+     },
+     "threshold": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Threshold"
+     },
+     "message": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Message"
+     },
+     "checked_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Checked At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "source",
+     "check_name",
+     "status",
+     "observed_value",
+     "threshold",
+     "message",
+     "checked_at"
+    ],
+    "title": "QualityCheckOut"
+   },
+   "RunwayConfigOut": {
+    "properties": {
+     "source_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Source Timestamp"
+     },
+     "arrival_runway_config": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Arrival Runway Config"
+     },
+     "departure_runway_config": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Departure Runway Config"
+     },
+     "arrival_rate": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Arrival Rate"
+     }
+    },
+    "type": "object",
+    "required": [
+     "source_timestamp",
+     "arrival_runway_config",
+     "departure_runway_config",
+     "arrival_rate"
+    ],
+    "title": "RunwayConfigOut"
+   },
+   "SourceFreshness": {
+    "properties": {
+     "source": {
+      "type": "string",
+      "title": "Source"
+     },
+     "display_name": {
+      "type": "string",
+      "title": "Display Name"
+     },
+     "source_url": {
+      "type": "string",
+      "title": "Source Url"
+     },
+     "health": {
+      "type": "string",
+      "enum": [
+       "healthy",
+       "delayed",
+       "stale",
+       "unavailable"
+      ],
+      "title": "Health"
+     },
+     "expected_interval_seconds": {
+      "type": "integer",
+      "title": "Expected Interval Seconds"
+     },
+     "last_attempt_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Attempt At"
+     },
+     "last_success_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Success At"
+     },
+     "last_failure_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Failure At"
+     },
+     "last_error": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Error"
+     },
+     "consecutive_failures": {
+      "type": "integer",
+      "title": "Consecutive Failures"
+     },
+     "last_source_published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Source Published At"
+     },
+     "last_observation_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Observation At"
+     },
+     "last_record_count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Record Count"
+     },
+     "age_seconds": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Seconds"
+     },
+     "thresholds_seconds": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Thresholds Seconds"
+     },
+     "limitations": {
+      "type": "string",
+      "title": "Limitations"
+     }
+    },
+    "type": "object",
+    "required": [
+     "source",
+     "display_name",
+     "source_url",
+     "health",
+     "expected_interval_seconds",
+     "last_attempt_at",
+     "last_success_at",
+     "last_failure_at",
+     "last_error",
+     "consecutive_failures",
+     "last_source_published_at",
+     "last_observation_at",
+     "last_record_count",
+     "age_seconds",
+     "thresholds_seconds",
+     "limitations"
+    ],
+    "title": "SourceFreshness"
+   },
+   "SystemStatusOut": {
+    "properties": {
+     "overall": {
+      "type": "string",
+      "enum": [
+       "healthy",
+       "delayed",
+       "stale",
+       "unavailable"
+      ],
+      "title": "Overall"
+     },
+     "sources": {
+      "items": {
+       "$ref": "#/components/schemas/SourceFreshness"
+      },
+      "type": "array",
+      "title": "Sources"
+     },
+     "recent_runs": {
+      "items": {
+       "$ref": "#/components/schemas/IngestionRunOut"
+      },
+      "type": "array",
+      "title": "Recent Runs"
+     },
+     "latest_quality": {
+      "items": {
+       "$ref": "#/components/schemas/QualityCheckOut"
+      },
+      "type": "array",
+      "title": "Latest Quality"
+     }
+    },
+    "type": "object",
+    "required": [
+     "overall",
+     "sources",
+     "recent_runs",
+     "latest_quality"
+    ],
+    "title": "SystemStatusOut"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "WeatherExtreme": {
+    "properties": {
+     "airport": {
+      "type": "string",
+      "title": "Airport"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Observed At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "airport",
+     "value",
+     "observed_at"
+    ],
+    "title": "WeatherExtreme"
+   },
+   "WeatherHourOut": {
+    "properties": {
+     "hour_utc": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Hour Utc"
+     },
+     "observations": {
+      "type": "integer",
+      "title": "Observations"
+     },
+     "avg_temperature_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Temperature C"
+     },
+     "max_wind_speed_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Wind Speed Kt"
+     },
+     "max_wind_gust_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Wind Gust Kt"
+     },
+     "min_visibility_sm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Visibility Sm"
+     },
+     "min_ceiling_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Min Ceiling Ft"
+     },
+     "worst_flight_category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Worst Flight Category"
+     }
+    },
+    "type": "object",
+    "required": [
+     "hour_utc",
+     "observations",
+     "avg_temperature_c",
+     "max_wind_speed_kt",
+     "max_wind_gust_kt",
+     "min_visibility_sm",
+     "min_ceiling_ft",
+     "worst_flight_category"
+    ],
+    "title": "WeatherHourOut"
+   },
+   "WeatherObservationOut": {
+    "properties": {
+     "station_icao": {
+      "type": "string",
+      "title": "Station Icao"
+     },
+     "observed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Observed At"
+     },
+     "source_published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Published At"
+     },
+     "ingested_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Ingested At"
+     },
+     "metar_type": {
+      "type": "string",
+      "title": "Metar Type"
+     },
+     "raw_text": {
+      "type": "string",
+      "title": "Raw Text"
+     },
+     "temperature_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temperature C"
+     },
+     "dewpoint_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Dewpoint C"
+     },
+     "wind_dir_deg": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Dir Deg"
+     },
+     "wind_dir_variable": {
+      "type": "boolean",
+      "title": "Wind Dir Variable"
+     },
+     "wind_speed_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Speed Kt"
+     },
+     "wind_gust_kt": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wind Gust Kt"
+     },
+     "visibility_sm": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Visibility Sm"
+     },
+     "visibility_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Visibility Text"
+     },
+     "visibility_is_lower_bound": {
+      "type": "boolean",
+      "title": "Visibility Is Lower Bound"
+     },
+     "altimeter_hpa": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Altimeter Hpa"
+     },
+     "ceiling_ft": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ceiling Ft"
+     },
+     "cloud_layers": {
+      "items": {
+       "$ref": "#/components/schemas/CloudLayer"
+      },
+      "type": "array",
+      "title": "Cloud Layers"
+     },
+     "wx_string": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Wx String"
+     },
+     "flight_category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flight Category"
+     },
+     "flight_category_source": {
+      "type": "string",
+      "title": "Flight Category Source"
+     },
+     "is_stale": {
+      "type": "boolean",
+      "title": "Is Stale"
+     }
+    },
+    "type": "object",
+    "required": [
+     "station_icao",
+     "observed_at",
+     "source_published_at",
+     "ingested_at",
+     "metar_type",
+     "raw_text",
+     "temperature_c",
+     "dewpoint_c",
+     "wind_dir_deg",
+     "wind_dir_variable",
+     "wind_speed_kt",
+     "wind_gust_kt",
+     "visibility_sm",
+     "visibility_text",
+     "visibility_is_lower_bound",
+     "altimeter_hpa",
+     "ceiling_ft",
+     "cloud_layers",
+     "wx_string",
+     "flight_category",
+     "flight_category_source",
+     "is_stale"
+    ],
+    "title": "WeatherObservationOut"
+   },
+   "WeatherOverviewOut": {
+    "properties": {
+     "airports": {
+      "items": {
+       "$ref": "#/components/schemas/AirportSummaryOut"
+      },
+      "type": "array",
+      "title": "Airports"
+     },
+     "flight_categories": {
+      "items": {
+       "$ref": "#/components/schemas/CategoryCount"
+      },
+      "type": "array",
+      "title": "Flight Categories"
+     },
+     "risk_counts": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Risk Counts"
+     },
+     "lowest_visibility": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherExtreme"
+      },
+      "type": "array",
+      "title": "Lowest Visibility"
+     },
+     "strongest_wind": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherExtreme"
+      },
+      "type": "array",
+      "title": "Strongest Wind"
+     },
+     "lowest_ceiling": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherExtreme"
+      },
+      "type": "array",
+      "title": "Lowest Ceiling"
+     },
+     "weather_health": {
+      "type": "string",
+      "enum": [
+       "healthy",
+       "delayed",
+       "stale",
+       "unavailable"
+      ],
+      "title": "Weather Health"
+     },
+     "advisory_weather_overlap": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Advisory Weather Overlap",
+      "description": "Airports with an active FAA advisory whose latest METAR is IFR/LIFR. Co-occurrence only; not a causal claim."
+     }
+    },
+    "type": "object",
+    "required": [
+     "airports",
+     "flight_categories",
+     "risk_counts",
+     "lowest_visibility",
+     "strongest_wind",
+     "lowest_ceiling",
+     "weather_health",
+     "advisory_weather_overlap"
+    ],
+    "title": "WeatherOverviewOut"
+   },
+   "WeatherTrendSeries": {
+    "properties": {
+     "airport": {
+      "type": "string",
+      "title": "Airport"
+     },
+     "hourly": {
+      "items": {
+       "$ref": "#/components/schemas/WeatherHourOut"
+      },
+      "type": "array",
+      "title": "Hourly"
+     }
+    },
+    "type": "object",
+    "required": [
+     "airport",
+     "hourly"
+    ],
+    "title": "WeatherTrendSeries"
+   }
+  }
+ }
+}
