@@ -72,8 +72,12 @@ def wait(resp):
         time.sleep(int(resp.headers.get("Retry-After", 5)))
         state = client.get(location).json()
         if state.get("status") == "Succeeded":
-            result = client.get(location + "/result")
-            return result.json() if result.status_code == 200 and result.content else {}
+            # Create operations expose /result; updateDefinition has none (OperationHasNoResult).
+            try:
+                result = client.get(location + "/result")
+                return result.json() if result.status_code == 200 and result.content else {}
+            except Exception:
+                return {}
         if state.get("status") == "Failed":
             raise RuntimeError(json.dumps(state))
 
