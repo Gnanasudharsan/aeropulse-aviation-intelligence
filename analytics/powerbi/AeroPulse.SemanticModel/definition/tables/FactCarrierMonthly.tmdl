@@ -1,0 +1,205 @@
+table FactCarrierMonthly
+	lineageTag: 7c0ce8a5-011c-5ade-b165-73c52cb61692
+
+	/// Flights by reporting carrier.
+	measure 'Carrier Flights' = SUM(FactCarrierMonthly[flights])
+		formatString: #,0
+		displayFolder: Carrier
+		lineageTag: d38227f9-4cbc-5874-bf69-77984585d95c
+
+	/// On-time rate by reporting carrier.
+	measure 'Carrier On-Time %' = DIVIDE(SUM(FactCarrierMonthly[ontime_num]), SUM(FactCarrierMonthly[ontime_den]))
+		formatString: 0.0%
+		displayFolder: Carrier
+		lineageTag: 85c0eb78-ac05-5755-ab19-e7a5e2e63f4e
+
+	column airport_iata
+		dataType: string
+		isHidden
+		lineageTag: 017e6464-67e0-51bc-bc2b-d52312024a12
+		summarizeBy: none
+		sourceColumn: airport_iata
+
+	column year_month
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		isHidden
+		lineageTag: 1ccdfd32-d233-56a7-85a6-03f0530673c9
+		summarizeBy: none
+		sourceColumn: year_month
+
+	column direction
+		dataType: string
+		lineageTag: a35ffcf8-a818-5d06-9a39-35dadf818ead
+		summarizeBy: none
+		sourceColumn: direction
+
+	column carrier_code
+		dataType: string
+		isHidden
+		lineageTag: b056c695-0872-5d9f-8d97-10393d780f55
+		summarizeBy: none
+		sourceColumn: carrier_code
+
+	column flights
+		dataType: int64
+		isHidden
+		lineageTag: b4a56b92-9a43-5cd8-b4e2-83da4e682f20
+		summarizeBy: sum
+		sourceColumn: flights
+
+	column cancelled
+		dataType: int64
+		isHidden
+		lineageTag: 09081e43-b156-5007-b499-f1c158fe390d
+		summarizeBy: sum
+		sourceColumn: cancelled
+
+	column diverted
+		dataType: int64
+		isHidden
+		lineageTag: 079535f3-265d-5788-b19d-100b68c0445c
+		summarizeBy: sum
+		sourceColumn: diverted
+
+	column ontime_den
+		dataType: int64
+		isHidden
+		lineageTag: 23d20581-0330-51ef-b81c-103d085f24c3
+		summarizeBy: sum
+		sourceColumn: ontime_den
+
+	column ontime_num
+		dataType: int64
+		isHidden
+		lineageTag: 171ed695-1071-57e7-94ad-97869bdac743
+		summarizeBy: sum
+		sourceColumn: ontime_num
+
+	column delayed_15
+		dataType: int64
+		isHidden
+		lineageTag: 1af13328-ffea-5622-8b5c-96e151a68b37
+		summarizeBy: sum
+		sourceColumn: delayed_15
+
+	column cancel_carrier
+		dataType: int64
+		isHidden
+		lineageTag: 312a29ae-cb53-5f2a-982a-72e0efe8ce06
+		summarizeBy: sum
+		sourceColumn: cancel_carrier
+
+	column cancel_weather
+		dataType: int64
+		isHidden
+		lineageTag: 220b4779-ad6a-5d33-906a-9bea8c886803
+		summarizeBy: sum
+		sourceColumn: cancel_weather
+
+	column cancel_nas
+		dataType: int64
+		isHidden
+		lineageTag: d69d0d1c-899f-5621-b65a-9b7e87cdf1fd
+		summarizeBy: sum
+		sourceColumn: cancel_nas
+
+	column cancel_security
+		dataType: int64
+		isHidden
+		lineageTag: 23103581-a162-5888-9a0c-4d88f69c4123
+		summarizeBy: sum
+		sourceColumn: cancel_security
+
+	column bucket_early
+		dataType: int64
+		isHidden
+		lineageTag: 604e027d-8578-5a1c-bd26-8c42dd36e6b8
+		summarizeBy: sum
+		sourceColumn: bucket_early
+
+	column bucket_0_14
+		dataType: int64
+		isHidden
+		lineageTag: be8ce6a0-7312-5838-abf3-783c179bde79
+		summarizeBy: sum
+		sourceColumn: bucket_0_14
+
+	column bucket_15_29
+		dataType: int64
+		isHidden
+		lineageTag: 89333096-89eb-5997-9e56-8a268886b830
+		summarizeBy: sum
+		sourceColumn: bucket_15_29
+
+	column bucket_30_59
+		dataType: int64
+		isHidden
+		lineageTag: 027766cc-7e7d-5717-85cb-a90ddc5314d4
+		summarizeBy: sum
+		sourceColumn: bucket_30_59
+
+	column bucket_60_119
+		dataType: int64
+		isHidden
+		lineageTag: a19f38db-9b88-5220-936e-ab23c5bd1179
+		summarizeBy: sum
+		sourceColumn: bucket_60_119
+
+	column bucket_120_plus
+		dataType: int64
+		isHidden
+		lineageTag: e69d1c6d-07ca-56b3-92d7-3671632013ba
+		summarizeBy: sum
+		sourceColumn: bucket_120_plus
+
+	column delay_sum_min
+		dataType: int64
+		isHidden
+		lineageTag: 0556a110-30f7-5675-9dd3-a15335a98e8f
+		summarizeBy: sum
+		sourceColumn: delay_sum_min
+
+	column carrier_delay_min
+		dataType: int64
+		isHidden
+		lineageTag: 9166edc2-c5c8-5280-8951-933a5d4d4b64
+		summarizeBy: sum
+		sourceColumn: carrier_delay_min
+
+	column weather_delay_min
+		dataType: int64
+		isHidden
+		lineageTag: 9728e0a5-b887-535f-ad83-efbcea887bd3
+		summarizeBy: sum
+		sourceColumn: weather_delay_min
+
+	column nas_delay_min
+		dataType: int64
+		isHidden
+		lineageTag: 42d9d7bb-57cc-59fe-be25-22f472760480
+		summarizeBy: sum
+		sourceColumn: nas_delay_min
+
+	column security_delay_min
+		dataType: int64
+		isHidden
+		lineageTag: a7ab558e-35b7-57e3-9b13-c456b8aed42a
+		summarizeBy: sum
+		sourceColumn: security_delay_min
+
+	column late_aircraft_delay_min
+		dataType: int64
+		isHidden
+		lineageTag: 7185ec09-5511-54da-b12a-d13ead744592
+		summarizeBy: sum
+		sourceColumn: late_aircraft_delay_min
+
+	partition FactCarrierMonthly = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "fact_carrier_monthly.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"airport_iata", type text}, {"year_month", type date}, {"direction", type text}, {"carrier_code", type text}, {"flights", Int64.Type}, {"cancelled", Int64.Type}, {"diverted", Int64.Type}, {"ontime_den", Int64.Type}, {"ontime_num", Int64.Type}, {"delayed_15", Int64.Type}, {"cancel_carrier", Int64.Type}, {"cancel_weather", Int64.Type}, {"cancel_nas", Int64.Type}, {"cancel_security", Int64.Type}, {"bucket_early", Int64.Type}, {"bucket_0_14", Int64.Type}, {"bucket_15_29", Int64.Type}, {"bucket_30_59", Int64.Type}, {"bucket_60_119", Int64.Type}, {"bucket_120_plus", Int64.Type}, {"delay_sum_min", Int64.Type}, {"carrier_delay_min", Int64.Type}, {"weather_delay_min", Int64.Type}, {"nas_delay_min", Int64.Type}, {"security_delay_min", Int64.Type}, {"late_aircraft_delay_min", Int64.Type}})
+				in
+				    Typed

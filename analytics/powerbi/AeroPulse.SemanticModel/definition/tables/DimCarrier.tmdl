@@ -1,0 +1,23 @@
+table DimCarrier
+	lineageTag: 8396f3e6-2317-5196-94a8-1349aa4b7a41
+
+	column carrier_code
+		dataType: string
+		lineageTag: 32873ebd-6185-5288-bb4c-daee8206353e
+		summarizeBy: none
+		sourceColumn: carrier_code
+
+	column carrier_name
+		dataType: string
+		lineageTag: 4caee53c-954d-5d09-afec-2e9f59115027
+		summarizeBy: none
+		sourceColumn: carrier_name
+
+	partition DimCarrier = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_carrier.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"carrier_code", type text}, {"carrier_name", type text}})
+				in
+				    Typed

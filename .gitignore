@@ -31,9 +31,10 @@ next-env.d.ts
 # Data (raw downloads are never committed; see pipelines/historical/README.md)
 data/raw/
 data/cache/
+data/derived/
 *.zip
 *.parquet
-!analytics/powerbi/sample/*.parquet
+!analytics/powerbi/data/*.parquet
 
 # Power BI temp
 *.pbix.bak

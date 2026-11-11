@@ -22,7 +22,7 @@ const FEATURES = [
   { icon: CloudSun, title: "Weather impact", body: "Flight-category distribution, visibility and wind comparisons, hourly trends and advisory co-occurrence.", href: "/weather" },
   { icon: ListTree, title: "Event explorer", body: "Full lifecycle of every FAA advisory — reported, updated, cleared — searchable and exportable to CSV.", href: "/events" },
   { icon: Gauge, title: "Freshness you can audit", body: "Live source health against documented thresholds, ingestion runs and data-quality checks.", href: "/methodology" },
-  { icon: BarChart3, title: "Historical analytics", body: "BTS on-time performance modelled as a star schema for Power BI — delays, cancellations and causes.", href: "/about" },
+  { icon: BarChart3, title: "Historical analytics", body: "BTS on-time performance modelled as a star schema for Power BI — delays, cancellations and causes.", href: "/analytics" },
 ];
 
 const PIPELINE = [
@@ -77,7 +77,7 @@ export default function LandingPage() {
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Operational awareness without guesswork</h2>
           <p className="text-ap-text-2">Reported events, observed weather, forecasts and model output are kept visibly separate — so a low-visibility morning is never mistaken for a ground stop.</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
             <Link key={f.title} href={f.href} className="ap-panel group p-6 transition-transform hover:-translate-y-0.5">
               <f.icon className="size-5 text-ap-accent" aria-hidden />

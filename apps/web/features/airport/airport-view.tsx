@@ -17,6 +17,7 @@ import { CATEGORY_META } from "@/lib/domain";
 import { cToF, formatLocal, formatUtc, num, relativeTime, visibility, wind } from "@/lib/format";
 
 import { AdvisoryCard } from "./advisory-card";
+import { AirportHistory } from "./airport-history";
 import { TafTimeline } from "./taf-timeline";
 import { ObservationCharts } from "./weather-charts";
 
@@ -104,7 +105,7 @@ export function AirportView({ code }: { code: string }) {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <Panel
           className="lg:col-span-8"
           title="Current conditions (observed)"
@@ -197,7 +198,7 @@ export function AirportView({ code }: { code: string }) {
         )}
       </Panel>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="Terminal forecast (TAF)" description="Forecast issued by the National Weather Service — not an observation.">
           {a.forecast ? <TafTimeline forecast={a.forecast} timeZone={a.timezone} /> : <EmptyState title="No TAF stored">This station has no current TAF in AeroPulse.</EmptyState>}
         </Panel>
@@ -220,6 +221,7 @@ export function AirportView({ code }: { code: string }) {
           </div>
         </Panel>
       </div>
+      <AirportHistory code={a.iata_code} />
       <div className="mt-4 flex justify-end">
         <Button variant="outline" size="sm" asChild>
           <Link href={`/events?airport=${a.iata_code}`}>View {a.iata_code} event history</Link>

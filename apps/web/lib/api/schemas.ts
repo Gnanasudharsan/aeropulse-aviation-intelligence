@@ -285,3 +285,61 @@ export type WeatherOverview = z.infer<typeof WeatherOverview>;
 
 export const WeatherTrendSeries = z.object({ airport: z.string(), hourly: z.array(WeatherHour) });
 export type WeatherTrendSeries = z.infer<typeof WeatherTrendSeries>;
+
+// --------------------------------------------------------------------------- historical (BTS)
+
+export const PerfRow = z.object({
+  flights: z.number(),
+  cancelled: z.number(),
+  diverted: z.number(),
+  delayed_15: z.number(),
+  ontime_rate: z.number().nullable(),
+  cancel_rate: z.number().nullable(),
+  avg_delay_min: z.number().nullable(),
+});
+export type PerfRow = z.infer<typeof PerfRow>;
+
+const Comparison = z.object({
+  ontime_rate: z.number().nullable(),
+  cancel_rate: z.number().nullable(),
+  avg_delay_min: z.number().nullable(),
+  flights: z.number().nullable(),
+});
+const Bucket = z.object({ key: z.string(), value: z.number() });
+const dateOnly = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+
+export const Analytics = z.object({
+  available: z.boolean(),
+  direction: z.enum(["arrival", "departure"]),
+  coverage: z.object({
+    first_month: dateOnly.nullable(),
+    last_month: dateOnly.nullable(),
+    months_loaded: z.number(),
+    selected_start: dateOnly.nullable(),
+    selected_end: dateOnly.nullable(),
+    source: z.string(),
+    lag_note: z.string(),
+  }),
+  totals: PerfRow.nullable(),
+  previous_year: Comparison.nullable(),
+  network: Comparison.nullable().optional(),
+  monthly: z.array(PerfRow.extend({ month: dateOnly })),
+  airports: z.array(PerfRow.extend({ airport: z.string(), name: z.string(), rank_ontime: z.number() })),
+  causes_minutes: z.array(Bucket),
+  cancellation_causes: z.array(Bucket),
+  delay_distribution: z.array(Bucket),
+  day_of_week: z.array(PerfRow.extend({ iso_dow: z.number() })),
+  hourly: z.array(PerfRow.extend({ hour_local: z.number() })),
+  carriers: z.array(PerfRow.extend({ carrier_code: z.string(), carrier_name: z.string() })),
+  airport_monthly: z.array(
+    z.object({
+      airport: z.string(),
+      month: dateOnly,
+      flights: z.number(),
+      ontime_rate: z.number().nullable(),
+      avg_delay_min: z.number().nullable(),
+    }),
+  ),
+});
+export type Analytics = z.infer<typeof Analytics>;
+

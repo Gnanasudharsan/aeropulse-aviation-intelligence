@@ -26,6 +26,11 @@ dev = [
   "mypy>=1.13",
   "pip-audit>=2.7",
 ]
+pipeline = [
+  "duckdb>=1.1",
+  "numpy>=2.0",
+  "scikit-learn>=1.5",
+]
 
 [tool.ruff]
 line-length = 100
@@ -36,8 +41,10 @@ select = ["E", "F", "W", "I", "B", "UP", "S", "ASYNC", "SIM", "RUF"]
 ignore = ["S101", "S311", "RUF012"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S105", "S106", "S608"]
-"migrations/**" = ["S608"]
+"tests/**" = ["S105", "S106", "S608", "E501"]
+"migrations/**" = ["S608", "E501"]
+# Long, readable SQL literals; all values are bound parameters.
+"app/api/v1/analytics.py" = ["E501", "S608"]
 
 [tool.mypy]
 python_version = "3.12"

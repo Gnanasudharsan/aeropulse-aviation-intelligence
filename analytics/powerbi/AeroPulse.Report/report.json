@@ -1,0 +1,51 @@
+{
+  "config": "{\"version\": \"5.55\", \"themeCollection\": {\"baseTheme\": {\"name\": \"CY24SU10\"}}}",
+  "layoutOptimization": 0,
+  "resourcePackages": [],
+  "sections": [
+    {
+      "name": "ReportSection0",
+      "displayName": "Executive Performance Overview",
+      "displayOption": 1,
+      "width": 1280,
+      "height": 720,
+      "visualContainers": [],
+      "filters": "[]",
+      "config": "{}",
+      "ordinal": 0
+    },
+    {
+      "name": "ReportSection1",
+      "displayName": "Airport Comparison",
+      "displayOption": 1,
+      "width": 1280,
+      "height": 720,
+      "visualContainers": [],
+      "filters": "[]",
+      "config": "{}",
+      "ordinal": 1
+    },
+    {
+      "name": "ReportSection2",
+      "displayName": "Delay Drivers",
+      "displayOption": 1,
+      "width": 1280,
+      "height": 720,
+      "visualContainers": [],
+      "filters": "[]",
+      "config": "{}",
+      "ordinal": 2
+    },
+    {
+      "name": "ReportSection3",
+      "displayName": "Seasonal and Temporal Insights",
+      "displayOption": 1,
+      "width": 1280,
+      "height": 720,
+      "visualContainers": [],
+      "filters": "[]",
+      "config": "{}",
+      "ordinal": 3
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+relationship 64d2738e-ed21-52be-b6f2-fba01d25e483
+	fromColumn: FactAirportDaily.flight_date
+	toColumn: DimDate.date
+
+relationship bdb30ac8-9af4-5f49-ab78-ac6a680dbe88
+	fromColumn: FactAirportDaily.airport_iata
+	toColumn: DimAirport.iata_code
+
+relationship 82fffb2c-5aae-5867-9f1d-f2f12ff63b48
+	fromColumn: FactAirportHourly.year_month
+	toColumn: DimDate.date
+
+relationship 36703cda-19dc-5b2b-b779-31fca3dd4138
+	fromColumn: FactAirportHourly.airport_iata
+	toColumn: DimAirport.iata_code
+
+relationship d73ddfb3-c76b-596b-a357-ae4bed510d51
+	fromColumn: FactCarrierMonthly.year_month
+	toColumn: DimDate.date
+
+relationship f016b424-37be-5443-8884-3ef22f801472
+	fromColumn: FactCarrierMonthly.airport_iata
+	toColumn: DimAirport.iata_code
+
+relationship 34d65a35-8e7e-5cf9-af6d-4c666b2bfe7c
+	fromColumn: FactCarrierMonthly.carrier_code
+	toColumn: DimCarrier.carrier_code

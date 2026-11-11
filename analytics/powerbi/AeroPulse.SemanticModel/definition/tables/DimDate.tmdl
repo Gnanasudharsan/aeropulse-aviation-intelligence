@@ -1,0 +1,84 @@
+table DimDate
+	lineageTag: b3edd328-8227-5691-99d4-cace4a395a28
+	dataCategory: Time
+
+	column date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 70f207e6-39ca-5bdc-b663-dc1192362e27
+		summarizeBy: none
+		sourceColumn: date
+
+	column year
+		dataType: int64
+		lineageTag: 3c7d4ce7-75d6-5129-bf91-7820e6ba969e
+		summarizeBy: none
+		sourceColumn: year
+
+	column quarter
+		dataType: int64
+		lineageTag: 37316855-4703-5678-a2c2-5d225f39b69d
+		summarizeBy: none
+		sourceColumn: quarter
+
+	column month
+		dataType: int64
+		lineageTag: 4a2dc173-791c-5303-a190-34e76e2a58e6
+		summarizeBy: none
+		sourceColumn: month
+
+	column month_short
+		dataType: string
+		sortByColumn: month
+		lineageTag: 8e1a0700-e8e4-5bcf-88fa-698346ea21e8
+		summarizeBy: none
+		sourceColumn: month_short
+
+	column year_month
+		dataType: string
+		lineageTag: 21d5071e-f5a5-55f5-ba9d-81c902c20d32
+		summarizeBy: none
+		sourceColumn: year_month
+
+	column month_start
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: aab71249-d827-5bfd-a3f6-d5a83b5a3b04
+		summarizeBy: none
+		sourceColumn: month_start
+
+	column iso_day_of_week
+		dataType: int64
+		lineageTag: 19637b31-e317-512d-ad1b-685b0fb6589f
+		summarizeBy: none
+		sourceColumn: iso_day_of_week
+
+	column day_short
+		dataType: string
+		sortByColumn: iso_day_of_week
+		lineageTag: 53835935-818e-5ff0-8ec3-475f77477040
+		summarizeBy: none
+		sourceColumn: day_short
+
+	column is_weekend
+		dataType: boolean
+		lineageTag: 81816130-ff5f-5371-bf6f-186053972bad
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+	column season
+		dataType: string
+		sortByColumn: month
+		lineageTag: 3b5ea81f-ac74-5853-95df-4e6f88386d5f
+		summarizeBy: none
+		sourceColumn: season
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_date.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"date", type date}, {"year", Int64.Type}, {"quarter", Int64.Type}, {"month", Int64.Type}, {"month_short", type text}, {"year_month", type text}, {"month_start", type date}, {"iso_day_of_week", Int64.Type}, {"day_short", type text}, {"is_weekend", type logical}, {"season", type text}})
+				in
+				    Typed

@@ -16,7 +16,7 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
 from app import __version__
-from app.api.v1 import airports, operations, system, weather
+from app.api.v1 import airports, analytics, operations, system, weather
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.core.ratelimit import RateLimitMiddleware
@@ -109,7 +109,13 @@ def create_app() -> FastAPI:
         log.error("database_error", error=type(exc).__name__)
         return _error(500, "internal_error", "An internal error occurred")
 
-    for router in (system.router, airports.router, operations.router, weather.router):
+    for router in (
+        system.router,
+        analytics.router,
+        airports.router,
+        operations.router,
+        weather.router,
+    ):
         app.include_router(router, prefix="/api/v1")
 
     @app.get("/", include_in_schema=False)

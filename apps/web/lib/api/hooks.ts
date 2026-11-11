@@ -8,6 +8,7 @@ import { apiGet } from "./client";
 import {
   AdvisoryDetail,
   Advisory,
+  Analytics,
   AirportDetail,
   AirportSummary,
   AirportWeather,
@@ -168,3 +169,21 @@ export function useAdvisoryDetail(id: number | null) {
     enabled: id !== null,
   });
 }
+
+export interface AnalyticsParams {
+  start?: string;
+  end?: string;
+  direction: "arrival" | "departure";
+}
+
+/** Historical BTS analytics (monthly data — refreshed rarely). */
+export function useAnalytics(params: AnalyticsParams, airport?: string) {
+  const path = airport ? `/api/v1/airports/${encodeURIComponent(airport)}/history` : "/api/v1/analytics/overview";
+  return useQuery({
+    queryKey: ["analytics", airport ?? "network", params],
+    queryFn: ({ signal }) => apiGet(path, Analytics, { ...params }, signal),
+    staleTime: 30 * 60_000,
+    placeholderData: keepPreviousData,
+  });
+}
+

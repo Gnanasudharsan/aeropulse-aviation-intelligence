@@ -1,0 +1,59 @@
+table DimAirport
+	lineageTag: 32815981-cd72-59e0-a934-e23f636071fc
+
+	column iata_code
+		dataType: string
+		lineageTag: d2d824cd-4c87-5d6e-b36d-1d689ad674ec
+		summarizeBy: none
+		sourceColumn: iata_code
+
+	column icao_code
+		dataType: string
+		lineageTag: ae160099-f26d-508e-b766-be7be2954980
+		summarizeBy: none
+		sourceColumn: icao_code
+
+	column name
+		dataType: string
+		lineageTag: 9c2acb1b-791d-5c60-8e72-7aea73a746f2
+		summarizeBy: none
+		sourceColumn: name
+
+	column city
+		dataType: string
+		lineageTag: 265bb53f-ffa8-5a91-9336-e686cbed2bca
+		summarizeBy: none
+		sourceColumn: city
+
+	column state
+		dataType: string
+		lineageTag: dd3dfa09-f62d-528e-9a82-66db865726ba
+		summarizeBy: none
+		sourceColumn: state
+
+	column latitude
+		dataType: double
+		lineageTag: c8ab6b2b-95d4-58f8-94b1-28ba45dba004
+		summarizeBy: none
+		sourceColumn: latitude
+
+	column longitude
+		dataType: double
+		lineageTag: c07af3c6-ae5e-5a56-9559-8b2a68f10555
+		summarizeBy: none
+		sourceColumn: longitude
+
+	column timezone
+		dataType: string
+		lineageTag: 25f991ac-5d13-5b67-8dad-4759c2adec20
+		summarizeBy: none
+		sourceColumn: timezone
+
+	partition DimAirport = m
+		mode: import
+		source =
+				let
+				    Source = Parquet.Document(File.Contents(DataFolder & "dim_airport.parquet")),
+				    Typed = Table.TransformColumnTypes(Source, {{"iata_code", type text}, {"icao_code", type text}, {"name", type text}, {"city", type text}, {"state", type text}, {"latitude", type number}, {"longitude", type number}, {"timezone", type text}})
+				in
+				    Typed
