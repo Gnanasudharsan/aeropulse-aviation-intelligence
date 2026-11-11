@@ -42,11 +42,12 @@ test("unknown airport shows a helpful not-monitored state", async ({ page }) => 
   await expect(page.getByText("ZZZ is not a monitored airport")).toBeVisible();
 });
 
-test("analytics never presents a Power BI report that is not configured", async ({ page }) => {
+test("analytics labels Power BI screenshots as screenshots when no embed URL is set", async ({ page }) => {
   await page.goto("/analytics");
-  // With NEXT_PUBLIC_POWERBI_REPORT_URL unset, no iframe is rendered and the state is explicit.
-  await expect(page.getByText(/Power BI report — built, awaiting publication/)).toBeVisible();
+  // With NEXT_PUBLIC_POWERBI_REPORT_URL unset, no iframe is rendered and images are captioned as screenshots.
+  await expect(page.getByText(/Power BI report — published in the Power BI service/)).toBeVisible();
   await expect(page.locator("iframe")).toHaveCount(0);
+  await expect(page.getByText(/screenshot, 2026-11-11/).first()).toBeVisible();
 });
 
 test("airport search filters the explorer", async ({ page }) => {

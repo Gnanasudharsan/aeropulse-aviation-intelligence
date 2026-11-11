@@ -188,16 +188,22 @@ retention: [`docs/architecture/database.md`](docs/architecture/database.md).
 
 ## Power BI
 
-Status, stated plainly: the **star schema (Parquet), TMDL semantic model (46 DAX measures)
-and the complete four-page report (33 visuals, PBIR format) are generated and validated against
-Microsoft's official schemas** in
-[`analytics/powerbi`](analytics/powerbi/README.md) from real BTS data. The model reads the Parquet files from their public GitHub URLs, so it refreshes in the Power BI
-service without a gateway. It **has not yet been opened in Power BI Desktop, published, or
-embedded** (that needs the owner's Power BI account); no `.pbix` is committed. The report specification is in
-[`docs/dashboards/powerbi-report.md`](docs/dashboards/powerbi-report.md). Once published
-("Publish to web"), set `NEXT_PUBLIC_POWERBI_REPORT_URL` and `/analytics` embeds it; until
-then the page states that nothing is embedded and shows AeroPulse's own charts over the same
-data, labelled as not Power BI.
+**Published in the Power BI service** (2026-11-11): a four-page report — 33 visuals over a
+46-measure TMDL model — generated as a Power BI Project in [`analytics/powerbi`](analytics/powerbi/README.md),
+validated against Microsoft's official schemas in CI, and deployed from a Fabric notebook
+([`fabric_deploy.py`](analytics/powerbi/fabric_deploy.py)) without Power BI Desktop. The model
+refreshes from the public Parquet star schema; its KPIs match PostgreSQL exactly
+(11,024,348 arrivals, 78.5 % on time, 1.58 % cancelled, 7.5 min average delay).
+
+| | |
+|---|---|
+| ![Executive overview](docs/screenshots/powerbi-executive.jpg) | ![Airport comparison](docs/screenshots/powerbi-comparison.jpg) |
+| ![Delay drivers](docs/screenshots/powerbi-drivers.jpg) | ![Seasonal and temporal](docs/screenshots/powerbi-temporal.jpg) |
+
+Screenshots captured from the Power BI service. Public "Publish to web" embedding is disabled by
+the owner's organization, so `/analytics` shows these dated screenshots (labelled as such) and a
+secure link; setting `NEXT_PUBLIC_POWERBI_REPORT_URL` to a Publish-to-web URL switches it to a
+live embed. Report specification: [`docs/dashboards/powerbi-report.md`](docs/dashboards/powerbi-report.md).
 
 ## Disruption risk
 

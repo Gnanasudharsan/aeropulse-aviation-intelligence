@@ -7,8 +7,8 @@
 | `AeroPulse.Report/` — enhanced report format (PBIR): 4 pages, 33 visuals, dark AeroPulse theme, default arrivals filter | ✅ Generated · ✅ validated against Microsoft's official JSON schemas |
 | `AeroPulse.pbip` — project entry point | ✅ Generated |
 | `../dax/measures.dax` — measures as a reviewable script | ✅ Generated |
-| Opened in Power BI Desktop / DAX evaluated by the engine | ⚠️ Not yet — requires Power BI Desktop (Windows) or the Power BI service |
-| Published / "Publish to web" URL | ❌ Requires the owner's Microsoft (work/school) account |
+| Deployed to the Power BI service, refreshed, DAX evaluated by the engine | ✅ 2026-11-11 via `fabric_deploy.py` in a Fabric notebook; KPIs match PostgreSQL (11,024,348 arrivals · 78.5 % on time · 1.58 % cancelled · 7.5 min avg delay) |
+| Public "Publish to web" embed | ❌ Disabled by the Northeastern tenant (admin setting); the website shows dated screenshots and a secure link instead |
 
 `validate_pbip.py` (also run in CI) checks: every report file against the Microsoft schema it
 declares; the theme against Microsoft's report-theme schema; every visual/filter field, DAX
@@ -28,6 +28,17 @@ until the report is opened in Power BI.
    cancellations by cause, weather and NAS minutes by month.
 4. **Seasonal and Temporal Insights** — on-time by calendar month × year, by weekday, by
    scheduled local hour, and by reporting carrier.
+
+## How it was published (no Windows)
+
+GitHub Git integration is disabled in the owner's tenant, so the items were created with
+`fabric_deploy.py`, run from a notebook in a Fabric-trial workspace. It reads the validated
+files from this repository and calls the Fabric item-definition APIs with the notebook user's
+identity; re-running updates the items in place. After creation: data source credentials
+(Web → Anonymous, privacy Public, skip test connection — the base URL itself is a folder) and
+**Refresh now**.
+
+Screenshots of the published pages: `docs/screenshots/powerbi-*.jpg`.
 
 ## Publish without Windows (Power BI Git integration, browser only)
 
