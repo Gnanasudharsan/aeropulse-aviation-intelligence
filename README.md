@@ -9,6 +9,9 @@ Weather Center** data, with historical **BTS on-time performance** analytics mod
 **Power BI**.
 
 [![CI](https://github.com/Gnanasudharsan/aeropulse-aviation-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/Gnanasudharsan/aeropulse-aviation-intelligence/actions/workflows/ci.yml)
+[![Website](https://img.shields.io/badge/website-aeropulse--aviation--intelligence.vercel.app-3ED4E8)](https://aeropulse-aviation-intelligence.vercel.app)
+
+**[Live website →](https://aeropulse-aviation-intelligence.vercel.app)**
 
 ![Command Center](docs/screenshots/command-center.png)
 
@@ -242,6 +245,14 @@ geographically adjacent (JFK/LGA/EWR); every marker is keyboard-focusable and ea
 is also reachable from the accessible list views.
 
 ## Deployment
+
+**Current status (honest):** the web app is deployed on Vercel at
+<https://aeropulse-aviation-intelligence.vercel.app> and redeploys automatically from `main`.
+The hosted data API (Render + Neon) is **not yet connected**, so the public site runs as a
+front-end preview: it shows a site-wide notice and "Live API not connected" states instead of
+data — nothing is simulated. The full live system runs locally with Docker Compose (see
+[screenshots](#screenshots)); connecting the hosted API only requires setting
+`NEXT_PUBLIC_API_BASE_URL` in Vercel.
 
 Zero-cost topology: Vercel (web) + Render free (API container) + Neon free (PostgreSQL) +
 GitHub Actions cron (ingestion triggers). Step-by-step:

@@ -21,12 +21,17 @@ const LABELS: Record<string, string> = {
  */
 export function FreshnessStrip({ dataUpdatedAt }: { dataUpdatedAt?: number }) {
   const now = useNow();
-  const { data, isError } = useFreshness();
+  const { data, isError, error } = useFreshness();
+  const notConfigured = (error as { code?: string } | null)?.code === "not_configured";
   const fetching = useIsFetching() > 0;
   const sources = data?.data.filter((s) => s.source in LABELS) ?? [];
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ap-text-2" aria-live="polite">
-      {isError && <span className="text-ap-crit">Freshness unavailable — API unreachable</span>}
+      {isError && (
+        <span className="text-ap-crit">
+          {notConfigured ? "Freshness unavailable — no live API connected to this deployment" : "Freshness unavailable — API unreachable"}
+        </span>
+      )}
       {sources.map((s) => {
         const meta = HEALTH_META[s.health];
         return (
