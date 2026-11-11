@@ -1,0 +1,54 @@
+[project]
+name = "aeropulse-api"
+version = "0.1.0"
+description = "AeroPulse API and ingestion worker"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.6",
+  "sqlalchemy>=2.0.36",
+  "alembic>=1.14",
+  "psycopg[binary,pool]>=3.2",
+  "httpx>=0.28",
+  "apscheduler>=3.10,<4",
+  "structlog>=24.4",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3",
+  "pytest-asyncio>=0.24",
+  "pytest-cov>=6.0",
+  "respx>=0.21",
+  "ruff>=0.8",
+  "mypy>=1.13",
+  "pip-audit>=2.7",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "ASYNC", "SIM", "RUF"]
+ignore = ["S101", "S311", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S608"]
+"migrations/**" = ["S608"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+exclude = ["migrations/", "tests/"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["integration: requires a PostgreSQL database (TEST_DATABASE_URL)"]

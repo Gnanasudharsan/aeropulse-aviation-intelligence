@@ -1,5 +1,16 @@
 name: aeropulse
 
+x-api-env: &api-env
+  DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-aeropulse}:${POSTGRES_PASSWORD:-change-me-locally}@db:5432/${POSTGRES_DB:-aeropulse}
+  APP_ENV: ${APP_ENV:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  HTTP_USER_AGENT: ${HTTP_USER_AGENT:-AeroPulse/1.0}
+  CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:3000}
+  INGEST_TRIGGER_TOKEN: ${INGEST_TRIGGER_TOKEN:-}
+  FAA_POLL_SECONDS: ${FAA_POLL_SECONDS:-300}
+  METAR_POLL_SECONDS: ${METAR_POLL_SECONDS:-600}
+  TAF_POLL_SECONDS: ${TAF_POLL_SECONDS:-1800}
+
 services:
   db:
     image: timescale/timescaledb:2.17.2-pg16
@@ -9,7 +20,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-locally}
       POSTGRES_DB: ${POSTGRES_DB:-aeropulse}
     ports:
-      - "5433:5432" # 5433 on the host avoids clashing with a local Postgres
+      - "127.0.0.1:5442:5432" # 5442 on the host avoids clashing with other local Postgres instances
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -17,6 +28,26 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+
+  migrate:
+    build: ./services/api
+    environment: *api-env
+    command: ["sh", "-c", "alembic upgrade head && python -m app.cli seed"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  worker:
+    build: ./services/api
+    environment: *api-env
+    command: ["python", "-m", "app.cli", "worker"]
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
 
 volumes:
   pgdata:

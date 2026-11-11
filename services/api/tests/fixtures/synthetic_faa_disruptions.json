@@ -1,0 +1,68 @@
+[
+  {
+    "_comment": "SYNTHETIC TEST FIXTURE - shaped after field names observed in nasstatus.faa.gov; values are invented for parser tests only and never loaded into a real database.",
+    "airportId": "EWR",
+    "groundStop": null,
+    "groundDelay": {
+      "id": "gdp-ewr-test-1",
+      "airportId": "EWR",
+      "startTime": "2026-11-11T14:00:00Z",
+      "endTime": "2026-11-11T23:59:00Z",
+      "updatedAt": "2026-11-11T13:55:00Z",
+      "avgDelay": "57 minutes",
+      "maxDelay": "2 hours and 1 minutes",
+      "impactingCondition": "WEATHER / LOW CEILINGS",
+      "departureScope": "TIER 1",
+      "includedFacilities": ["ZDC", "ZOB"],
+      "advisoryUrl": "https://www.fly.faa.gov/adv/test"
+    },
+    "arrivalDelay": {
+      "airportId": "EWR",
+      "averageDelay": "1 hour and 15 minutes",
+      "reason": "WX:Low Ceilings",
+      "trend": "Increasing",
+      "updateTime": "2026-11-11T13:58:00Z"
+    },
+    "departureDelay": null,
+    "airportConfig": null,
+    "deicing": null
+  },
+  {
+    "airportId": "SFO",
+    "groundStop": [
+      {
+        "id": "gs-sfo-test-1",
+        "airportId": "SFO",
+        "startTime": "2026-11-11T15:00:00Z",
+        "endTime": "2026-11-11T16:30:00Z",
+        "updatedAt": "2026-11-11T15:01:00Z",
+        "impactingCondition": "WEATHER / WIND",
+        "probabilityOfExtension": "MEDIUM",
+        "includedFacilities": ["ZOA"]
+      }
+    ],
+    "departureDelay": {
+      "airportId": "SFO",
+      "averageDelay": 45,
+      "reason": "TM Initiatives:GS:WIND",
+      "trend": "Decreasing",
+      "updateTime": "2026-11-11T15:02:00Z"
+    },
+    "deicing": null
+  },
+  {
+    "airportId": "ORD",
+    "deicing": {"airportId": "ORD", "eventTime": "2026-11-11T12:00:00Z"},
+    "freeForm": {
+      "id": "ff-ord-test-1",
+      "airportId": "ORD",
+      "startTime": "2026-11-11T05:00:00Z",
+      "endTime": "2026-11-11T09:00:00Z",
+      "updatedAt": "2026-11-11T04:59:00Z",
+      "simpleText": "!ORD 11/001 ORD AD AP CLSD 2611110500-2611110900",
+      "text": "AD AP CLSD"
+    }
+  },
+  {"groundStop": {"airportId": "XXX"}},
+  "not-an-object"
+]

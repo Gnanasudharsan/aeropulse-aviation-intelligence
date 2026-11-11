@@ -31,7 +31,7 @@ Honest limitations of the free topology:
   freshness model surfaces this as `delayed`/`stale` rather than hiding it.
 * Render free instances cold-start; the first request after idle is slow. The web app
   shows skeletons and retries rather than errors.
-* Neon storage limits require the retention policy in `docs/architecture/retention.md`.
+* Neon storage limits require the retention policy in `docs/architecture/database.md#retention`.
 
 Deployment is performed only after the repository owner approves account usage for
 Render and Neon (both require sign-in with the owner's account).

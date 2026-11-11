@@ -12,7 +12,7 @@ Live operational metrics and historical metrics are never mixed.
 | **Active advisory** | An advisory that (a) appeared in the most recent *successful* FAA poll, and (b) whose `ends_at` is null or in the future. An advisory that disappears from the feed is marked `cleared_at = first poll in which it was absent`. |
 | **Ground stop** | Advisory of type `ground_stop` as reported by FAA. Never inferred from weather. |
 | **Ground delay program (GDP)** | Advisory of type `ground_delay_program` as reported by FAA; `avg_delay_minutes` is the FAA-reported average. |
-| **Airport closure** | `airport_closure` = FAA-reported full closure. `closure_notam` = NOTAM closure that may be partial (e.g. to transient GA only); it is displayed but never counted as a full closure. |
+| **Airport closure** | `airport_closure` / `closure_notam` with `scope`: `full` (closed to all operations), `daily_window` (closed only inside a recurring UTC window such as a curfew `DLY 0730-1415` — counted as a full closure only while inside the window), `partial` (closed only to some operations, e.g. *TO NON SKED TRANSIENT GA ACFT* — displayed, never counted as a closure). |
 | **Reported delay** | `arrival_delay`/`departure_delay` advisory with FAA-reported min/max/average minutes and trend. |
 | **Operational disruption (airport)** | Airport has ≥ 1 active advisory of type `ground_stop`, `ground_delay_program`, `airport_closure`, `arrival_delay` or `departure_delay`. |
 | **Flight category** | AWC METAR `fltCat`: VFR (ceiling > 3000 ft and vis > 5 SM), MVFR (1000–3000 ft or 3–5 SM), IFR (500–<1000 ft or 1–<3 SM), LIFR (< 500 ft or < 1 SM). |
