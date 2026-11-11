@@ -1,0 +1,96 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "a381131e5bf956179cd1",
+  "position": {
+    "x": 16,
+    "y": 96,
+    "z": 3000,
+    "height": 296,
+    "width": 620,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "month_short"
+                }
+              },
+              "queryRef": "DimDate.month_short",
+              "nativeQueryRef": "month_short"
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "year"
+                }
+              },
+              "queryRef": "DimDate.year",
+              "nativeQueryRef": "year"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "On-Time %"
+                }
+              },
+              "queryRef": "FactAirportDaily.On-Time %",
+              "nativeQueryRef": "On-Time %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'On-time % by calendar month and year'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -45,7 +45,7 @@ test("unknown airport shows a helpful not-monitored state", async ({ page }) => 
 test("analytics never presents a Power BI report that is not configured", async ({ page }) => {
   await page.goto("/analytics");
   // With NEXT_PUBLIC_POWERBI_REPORT_URL unset, no iframe is rendered and the state is explicit.
-  await expect(page.getByText(/Power BI report — not yet published/)).toBeVisible();
+  await expect(page.getByText(/Power BI report — built, awaiting publication/)).toBeVisible();
   await expect(page.locator("iframe")).toHaveCount(0);
 });
 

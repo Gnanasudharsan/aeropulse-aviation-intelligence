@@ -1,0 +1,130 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "48190ea295b35fdbbb69",
+  "position": {
+    "x": 652,
+    "y": 496,
+    "z": 5000,
+    "height": 208,
+    "width": 612,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Flights Early"
+                }
+              },
+              "queryRef": "FactAirportDaily.Flights Early",
+              "nativeQueryRef": "Flights Early"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Flights 0-14 min late"
+                }
+              },
+              "queryRef": "FactAirportDaily.Flights 0-14 min late",
+              "nativeQueryRef": "Flights 0-14 min late"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Flights 15-29 min late"
+                }
+              },
+              "queryRef": "FactAirportDaily.Flights 15-29 min late",
+              "nativeQueryRef": "Flights 15-29 min late"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Flights 30-59 min late"
+                }
+              },
+              "queryRef": "FactAirportDaily.Flights 30-59 min late",
+              "nativeQueryRef": "Flights 30-59 min late"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Flights 60-119 min late"
+                }
+              },
+              "queryRef": "FactAirportDaily.Flights 60-119 min late",
+              "nativeQueryRef": "Flights 60-119 min late"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Flights 120+ min late"
+                }
+              },
+              "queryRef": "FactAirportDaily.Flights 120+ min late",
+              "nativeQueryRef": "Flights 120+ min late"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Delay distribution (operated, non-diverted flights)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -270,6 +270,29 @@ MEASURES = [
     ),
 ]
 
+
+MEASURES += [
+    Measure(f"Flights {label}", f"SUM({F}[{col}])", "#,0", "Distribution", f"Operated, non-diverted flights {desc}.")
+    for label, col, desc in (
+        ("Early", "bucket_early", "arriving/departing early"),
+        ("0-14 min late", "bucket_0_14", "0-14 minutes late (on time)"),
+        ("15-29 min late", "bucket_15_29", "15-29 minutes late"),
+        ("30-59 min late", "bucket_30_59", "30-59 minutes late"),
+        ("60-119 min late", "bucket_60_119", "60-119 minutes late"),
+        ("120+ min late", "bucket_120_plus", "120 or more minutes late"),
+    )
+] + [
+    Measure(
+        f"Cancellations - {label}", f"SUM({F}[{col}])", "#,0", "Cancellation causes", f"Cancellations coded {code}."
+    )
+    for label, col, code in (
+        ("Carrier", "cancel_carrier", "A (carrier)"),
+        ("Weather", "cancel_weather", "B (weather)"),
+        ("NAS", "cancel_nas", "C (National Airspace System)"),
+        ("Security", "cancel_security", "D (security)"),
+    )
+]
+
 HOURLY_MEASURES = [
     Measure("Hourly Flights", "SUM(FactAirportHourly[flights])", "#,0", "Hourly", "Flights by scheduled local hour."),
     Measure(
@@ -318,7 +341,32 @@ RELATIONSHIPS = [
     ("FactCarrierMonthly", "year_month", "DimDate", "date"),
     ("FactCarrierMonthly", "airport_iata", "DimAirport", "iata_code"),
     ("FactCarrierMonthly", "carrier_code", "DimCarrier", "carrier_code"),
+    (F, "direction", "DimDirection", "direction"),
+    ("FactAirportHourly", "direction", "DimDirection", "direction"),
+    ("FactCarrierMonthly", "direction", "DimDirection", "direction"),
 ]
+
+# Public, anonymous source for the exported star schema (U.S. public-domain BTS data), so the
+# model refreshes in the Power BI service without a gateway. Forks can change the parameter.
+DATA_URL = (
+    "https://raw.githubusercontent.com/Gnanasudharsan/aeropulse-aviation-intelligence/main/analytics/powerbi/data/"
+)
+
+DIM_DIRECTION_TMDL = f"""table DimDirection
+\tlineageTag: {tag("table", "DimDirection")}
+
+\t/// arrival = flights arriving at the airport (DOT on-time convention); departure = flights departing it.
+\tcolumn direction
+\t\tdataType: string
+\t\tisNameInferred
+\t\tlineageTag: {tag("column", "DimDirection", "direction")}
+\t\tsummarizeBy: none
+\t\tsourceColumn: [direction]
+
+\tpartition DimDirection = calculated
+\t\tmode: import
+\t\tsource = DATATABLE("direction", STRING, {{{{"arrival"}}, {{"departure"}}}})
+"""
 
 PAGES = ["Executive Performance Overview", "Airport Comparison", "Delay Drivers", "Seasonal and Temporal Insights"]
 
@@ -368,7 +416,7 @@ def table_tmdl(t: Table) -> str:
         m_types.append(f'{{"{col}", {M_TYPES[tm_type]}}}')
     m = (
         "let\n"
-        f'\t\t\t\t    Source = Parquet.Document(File.Contents(DataFolder & "{t.file}")),\n'
+        f'\t\t\t\t    Source = Parquet.Document(Binary.Buffer(Web.Contents(DataUrl, [RelativePath = "{t.file}"]))),\n'
         f"\t\t\t\t    Typed = Table.TransformColumnTypes(Source, {{{', '.join(m_types)}}})\n"
         "\t\t\t\tin\n\t\t\t\t    Typed"
     )
@@ -413,16 +461,16 @@ def main() -> None:
                 "",
             ]
             + [f"ref table {t.name}" for t in TABLES]
+            + ["ref table DimDirection"]
         ),
     )
     write(
         sm / "definition" / "expressions.tmdl",
         "\n".join(
             [
-                "/// Folder containing the exported Parquet star schema (must end with a path separator).",
-                'expression DataFolder = "C:\\\\AeroPulse\\\\analytics\\\\powerbi\\\\data\\\\" meta [IsParameterQuery=true, '
-                'Type="Text", IsParameterQueryRequired=true]',
-                f"\tlineageTag: {tag('expression', 'DataFolder')}",
+                "/// Base URL of the exported Parquet star schema (public GitHub raw files; must end with /).",
+                f'expression DataUrl = "{DATA_URL}" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]',
+                f"\tlineageTag: {tag('expression', 'DataUrl')}",
                 "",
                 "\tannotation PBI_ResultType = Text",
             ]
@@ -430,47 +478,15 @@ def main() -> None:
     )
     for t in TABLES:
         write(sm / "definition" / "tables" / f"{t.name}.tmdl", table_tmdl(t))
+    write(sm / "definition" / "tables" / "DimDirection.tmdl", DIM_DIRECTION_TMDL)
     rel = []
     for ft, fc, tt, tc in RELATIONSHIPS:
         rel += [f"relationship {tag('rel', ft, fc, tt)}", f"\tfromColumn: {ft}.{fc}", f"\ttoColumn: {tt}.{tc}", ""]
     write(sm / "definition" / "relationships.tmdl", "\n".join(rel))
 
-    write(
-        rp / "definition.pbir",
-        json.dumps(
-            {
-                "version": "4.0",
-                "datasetReference": {"byPath": {"path": "../AeroPulse.SemanticModel"}},
-            },
-            indent=2,
-        ),
-    )
-    sections = [
-        {
-            "name": f"ReportSection{i}",
-            "displayName": p,
-            "displayOption": 1,
-            "width": 1280,
-            "height": 720,
-            "visualContainers": [],
-            "filters": "[]",
-            "config": "{}",
-            "ordinal": i,
-        }
-        for i, p in enumerate(PAGES)
-    ]
-    write(
-        rp / "report.json",
-        json.dumps(
-            {
-                "config": json.dumps({"version": "5.55", "themeCollection": {"baseTheme": {"name": "CY24SU10"}}}),
-                "layoutOptimization": 0,
-                "resourcePackages": [],
-                "sections": sections,
-            },
-            indent=2,
-        ),
-    )
+    from generate_report import write_report  # local module
+
+    pages, visuals = write_report(rp)
 
     dax = ["// AeroPulse DAX measures (generated by analytics/powerbi/generate_pbip.py — do not edit by hand)", ""]
     for t in TABLES:
@@ -478,7 +494,10 @@ def main() -> None:
             dax += [f"// {m.folder} · {m.description}", f"[{m.name}] =", f"    {m.expr}", ""]
     write(ROOT.parent / "dax" / "measures.dax", "\n".join(dax))
     n = sum(len(t.measures) for t in TABLES)
-    print(f"PBIP written: {len(TABLES)} tables, {len(RELATIONSHIPS)} relationships, {n} measures, {len(PAGES)} pages")
+    print(
+        f"PBIP written: {len(TABLES) + 1} tables, {len(RELATIONSHIPS)} relationships, {n} measures, "
+        f"{pages} pages, {visuals} visuals"
+    )
 
 
 if __name__ == "__main__":

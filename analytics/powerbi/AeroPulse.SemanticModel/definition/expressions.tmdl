@@ -1,5 +1,5 @@
-/// Folder containing the exported Parquet star schema (must end with a path separator).
-expression DataFolder = "C:\\AeroPulse\\analytics\\powerbi\\data\\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
-	lineageTag: 6795b815-3d1f-523a-9f3b-e084645008f5
+/// Base URL of the exported Parquet star schema (public GitHub raw files; must end with /).
+expression DataUrl = "https://raw.githubusercontent.com/Gnanasudharsan/aeropulse-aviation-intelligence/main/analytics/powerbi/data/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 1ad7e25f-5e84-5f31-9983-7489960c158a
 
 	annotation PBI_ResultType = Text

@@ -1,0 +1,14 @@
+table DimDirection
+	lineageTag: 0a5b2bb1-b1b1-5e22-bc37-68a45c440325
+
+	/// arrival = flights arriving at the airport (DOT on-time convention); departure = flights departing it.
+	column direction
+		dataType: string
+		isNameInferred
+		lineageTag: 93766a4e-78dc-5ee2-8164-764a062db09b
+		summarizeBy: none
+		sourceColumn: [direction]
+
+	partition DimDirection = calculated
+		mode: import
+		source = DATATABLE("direction", STRING, {{"arrival"}, {"departure"}})

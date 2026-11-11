@@ -124,6 +124,27 @@ jobs:
           path: apps/web/test-results
           retention-days: 7
 
+  powerbi:
+    name: Power BI project validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Fetch Microsoft report schemas
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse https://github.com/microsoft/json-schemas.git /tmp/json-schemas
+          git -C /tmp/json-schemas sparse-checkout set fabric/item/report
+          curl -sSfL -o /tmp/reportThemeSchema.json \
+            "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.159.json"
+      - name: Regenerate (must match committed files) and validate
+        run: |
+          uv run --project services/api --group pipeline python analytics/powerbi/generate_pbip.py
+          git diff --exit-code -- analytics/powerbi analytics/dax
+          uv run --project services/api --group pipeline python analytics/powerbi/validate_pbip.py \
+            --schemas /tmp/json-schemas --theme-schema /tmp/reportThemeSchema.json
+
   docker:
     name: Container images build
     runs-on: ubuntu-latest

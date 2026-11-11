@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "89b9b18b41aa5ee496c2",
+  "position": {
+    "x": 792,
+    "y": 216,
+    "z": 7000,
+    "height": 236,
+    "width": 472,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cancellations - Carrier"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cancellations - Carrier",
+              "nativeQueryRef": "Cancellations - Carrier"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cancellations - Weather"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cancellations - Weather",
+              "nativeQueryRef": "Cancellations - Weather"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cancellations - NAS"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cancellations - NAS",
+              "nativeQueryRef": "Cancellations - NAS"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cancellations - Security"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cancellations - Security",
+              "nativeQueryRef": "Cancellations - Security"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cancellations by reported cause'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

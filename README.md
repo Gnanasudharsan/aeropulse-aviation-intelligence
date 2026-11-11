@@ -188,11 +188,12 @@ retention: [`docs/architecture/database.md`](docs/architecture/database.md).
 
 ## Power BI
 
-Status, stated plainly: the **star schema (Parquet), TMDL semantic model, relationships,
-DAX measures and a four-page report shell are generated** in
-[`analytics/powerbi`](analytics/powerbi/README.md) from real BTS data. They were produced on
-macOS and **have not been opened in Power BI Desktop, published, or embedded**; no `.pbix`
-exists. The report specification is in
+Status, stated plainly: the **star schema (Parquet), TMDL semantic model (46 DAX measures)
+and the complete four-page report (33 visuals, PBIR format) are generated and validated against
+Microsoft's official schemas** in
+[`analytics/powerbi`](analytics/powerbi/README.md) from real BTS data. The model reads the Parquet files from their public GitHub URLs, so it refreshes in the Power BI
+service without a gateway. It **has not yet been opened in Power BI Desktop, published, or
+embedded** (that needs the owner's Power BI account); no `.pbix` is committed. The report specification is in
 [`docs/dashboards/powerbi-report.md`](docs/dashboards/powerbi-report.md). Once published
 ("Publish to web"), set `NEXT_PUBLIC_POWERBI_REPORT_URL` and `/analytics` embeds it; until
 then the page states that nothing is embedded and shows AeroPulse's own charts over the same

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "a99d05d526b252b3b8c3",
+  "position": {
+    "x": 332,
+    "y": 96,
+    "z": 4000,
+    "height": 104,
+    "width": 300,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "NAS Share of Delay Minutes"
+                }
+              },
+              "queryRef": "FactAirportDaily.NAS Share of Delay Minutes",
+              "nativeQueryRef": "NAS Share of Delay Minutes"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'NAS share of cause minutes'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

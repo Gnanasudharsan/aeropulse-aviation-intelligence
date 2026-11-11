@@ -25,3 +25,15 @@ relationship f016b424-37be-5443-8884-3ef22f801472
 relationship 34d65a35-8e7e-5cf9-af6d-4c666b2bfe7c
 	fromColumn: FactCarrierMonthly.carrier_code
 	toColumn: DimCarrier.carrier_code
+
+relationship 0fb335af-d0d5-5d23-9f25-fb63f3487501
+	fromColumn: FactAirportDaily.direction
+	toColumn: DimDirection.direction
+
+relationship ed965573-8d5c-5a01-b108-6b7c5a892148
+	fromColumn: FactAirportHourly.direction
+	toColumn: DimDirection.direction
+
+relationship 398499d6-3265-5ee6-89a7-2d6c0533e2ec
+	fromColumn: FactCarrierMonthly.direction
+	toColumn: DimDirection.direction

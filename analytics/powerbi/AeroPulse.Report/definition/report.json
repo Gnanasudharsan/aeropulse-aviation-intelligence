@@ -1,0 +1,88 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "customTheme": {
+      "name": "AeroPulse-dark.json",
+      "reportVersionAtImport": {
+        "report": "3.3.0",
+        "page": "2.1.0",
+        "visual": "2.13.0"
+      },
+      "type": "RegisteredResources"
+    }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "fdc0091a88e35e3cb728",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimDirection"
+              }
+            },
+            "Property": "direction"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "DimDirection",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "direction"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'arrival'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "AeroPulse-dark.json",
+          "path": "AeroPulse-dark.json",
+          "type": "CustomTheme"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "defaultDrillFilterOtherVisuals": true
+  }
+}

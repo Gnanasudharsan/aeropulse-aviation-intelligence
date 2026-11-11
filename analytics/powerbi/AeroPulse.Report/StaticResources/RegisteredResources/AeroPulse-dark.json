@@ -1,0 +1,114 @@
+{
+  "name": "AeroPulse Dark",
+  "dataColors": [
+    "#1A9DB2",
+    "#D9733F",
+    "#9085E9",
+    "#AA880A",
+    "#D55181",
+    "#4C9A2A",
+    "#3ED4E8",
+    "#49DBAA"
+  ],
+  "background": "#0B1220",
+  "secondaryBackground": "#16263E",
+  "foreground": "#F3F8FF",
+  "foregroundNeutralSecondary": "#A8BED3",
+  "tableAccent": "#3ED4E8",
+  "good": "#49DBAA",
+  "neutral": "#FFB454",
+  "bad": "#F27989",
+  "maximum": "#3ED4E8",
+  "center": "#1C3050",
+  "minimum": "#7A3550",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#F3F8FF"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#F3F8FF"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#A8BED3"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 26,
+      "color": "#F3F8FF"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#16263E"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#24395A"
+              }
+            },
+            "radius": 10
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#F3F8FF"
+              }
+            },
+            "fontSize": 11
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#0B1220"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#0B1220"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}

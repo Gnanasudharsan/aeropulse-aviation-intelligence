@@ -1,10 +1,11 @@
 # Power BI report specification — AeroPulse Airport Performance
 
-**Status (honest):** the semantic model (TMDL), relationships, DAX measures and a report shell
-with the four pages are generated in `analytics/powerbi/` by `generate_pbip.py`. They were
-generated on macOS and **have not been opened or validated in Power BI Desktop**, which runs
-only on Windows. Visuals are placed by hand in Power BI Desktop following this spec. No `.pbix`
-file exists in the repository.
+**Status (honest):** the semantic model (TMDL) **and the complete report** (PBIR: 4 pages,
+33 visuals, AeroPulse theme) are generated in `analytics/powerbi/` by `generate_pbip.py` and
+validated by `validate_pbip.py` against Microsoft's official schemas plus model-integrity and
+data-source checks (also in CI). They have not yet been opened in Power BI Desktop or published,
+which needs Windows or the owner's Power BI account; DAX is evaluated only at that point. No
+`.pbix` file is committed (PBIP is the source-control format).
 
 ## Data model (star schema)
 
@@ -17,6 +18,9 @@ erDiagram
   DimAirport ||--o{ FactAirportHourly : iata_code
   DimAirport ||--o{ FactCarrierMonthly : iata_code
   DimCarrier ||--o{ FactCarrierMonthly : carrier_code
+  DimDirection ||--o{ FactAirportDaily : direction
+  DimDirection ||--o{ FactAirportHourly : direction
+  DimDirection ||--o{ FactCarrierMonthly : direction
 ```
 
 | Table | Grain | Rows (24 months) | Notes |
@@ -28,9 +32,9 @@ erDiagram
 | `DimAirport` | airport | 50 | IATA/ICAO, city, state, coordinates, time zone |
 | `DimCarrier` | carrier | ~15 | BTS reporting-carrier code → name |
 
-**Direction** (`arrival` / `departure`) is a column on every fact. Every report page has a
-single-select slicer on `direction` (default **arrival**, the DOT on-time convention) so
-that a flight is never double counted.
+**Direction** (`arrival` / `departure`) is a column on every fact, related to the calculated
+`DimDirection` table. A report-level filter defaults to **arrival** (the DOT on-time convention)
+and every page has a direction slicer, so a flight is never double counted.
 
 ## Measures (see `analytics/dax/measures.dax`)
 

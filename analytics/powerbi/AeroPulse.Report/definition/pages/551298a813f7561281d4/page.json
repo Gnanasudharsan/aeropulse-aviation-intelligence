@@ -1,0 +1,8 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "551298a813f7561281d4",
+  "displayName": "Executive Performance Overview",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280
+}

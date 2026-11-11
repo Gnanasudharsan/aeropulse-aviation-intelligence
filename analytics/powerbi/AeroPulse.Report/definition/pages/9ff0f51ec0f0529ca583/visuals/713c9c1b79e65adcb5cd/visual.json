@@ -1,0 +1,96 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "713c9c1b79e65adcb5cd",
+  "position": {
+    "x": 652,
+    "y": 408,
+    "z": 6000,
+    "height": 296,
+    "width": 612,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCarrier"
+                    }
+                  },
+                  "Property": "carrier_name"
+                }
+              },
+              "queryRef": "DimCarrier.carrier_name",
+              "nativeQueryRef": "carrier_name"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactCarrierMonthly"
+                    }
+                  },
+                  "Property": "Carrier On-Time %"
+                }
+              },
+              "queryRef": "FactCarrierMonthly.Carrier On-Time %",
+              "nativeQueryRef": "Carrier On-Time %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactCarrierMonthly"
+                  }
+                },
+                "Property": "Carrier On-Time %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": false
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'On-time % by reporting carrier'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

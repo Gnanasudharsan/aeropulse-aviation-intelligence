@@ -1,0 +1,96 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "7ed4630f70485075b738",
+  "position": {
+    "x": 652,
+    "y": 96,
+    "z": 4000,
+    "height": 384,
+    "width": 612,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimAirport"
+                    }
+                  },
+                  "Property": "iata_code"
+                }
+              },
+              "queryRef": "DimAirport.iata_code",
+              "nativeQueryRef": "iata_code"
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "year_month"
+                }
+              },
+              "queryRef": "DimDate.year_month",
+              "nativeQueryRef": "year_month"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "On-Time %"
+                }
+              },
+              "queryRef": "FactAirportDaily.On-Time %",
+              "nativeQueryRef": "On-Time %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'On-time % by airport and month'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

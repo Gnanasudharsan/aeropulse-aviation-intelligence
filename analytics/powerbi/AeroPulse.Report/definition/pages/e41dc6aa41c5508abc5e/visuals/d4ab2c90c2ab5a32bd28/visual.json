@@ -1,0 +1,152 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "d4ab2c90c2ab5a32bd28",
+  "position": {
+    "x": 16,
+    "y": 216,
+    "z": 6000,
+    "height": 488,
+    "width": 760,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "hundredPercentStackedBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimAirport"
+                    }
+                  },
+                  "Property": "iata_code"
+                }
+              },
+              "queryRef": "DimAirport.iata_code",
+              "nativeQueryRef": "iata_code"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - Late Aircraft"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - Late Aircraft",
+              "nativeQueryRef": "Cause Minutes - Late Aircraft"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - Carrier"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - Carrier",
+              "nativeQueryRef": "Cause Minutes - Carrier"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - NAS"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - NAS",
+              "nativeQueryRef": "Cause Minutes - NAS"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - Weather"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - Weather",
+              "nativeQueryRef": "Cause Minutes - Weather"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - Security"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - Security",
+              "nativeQueryRef": "Cause Minutes - Security"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactAirportDaily"
+                  }
+                },
+                "Property": "Total Cause Minutes"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": false
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Reported delay-cause mix by airport (attribution, not proven causation)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

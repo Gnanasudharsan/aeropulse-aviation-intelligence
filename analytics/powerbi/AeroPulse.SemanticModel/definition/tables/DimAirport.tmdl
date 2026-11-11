@@ -53,7 +53,7 @@ table DimAirport
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents(DataFolder & "dim_airport.parquet")),
+				    Source = Parquet.Document(Binary.Buffer(Web.Contents(DataUrl, [RelativePath = "dim_airport.parquet"]))),
 				    Typed = Table.TransformColumnTypes(Source, {{"iata_code", type text}, {"icao_code", type text}, {"name", type text}, {"city", type text}, {"state", type text}, {"latitude", type number}, {"longitude", type number}, {"timezone", type text}})
 				in
 				    Typed

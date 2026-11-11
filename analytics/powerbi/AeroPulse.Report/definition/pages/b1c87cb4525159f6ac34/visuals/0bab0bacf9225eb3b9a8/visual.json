@@ -1,0 +1,162 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "0bab0bacf9225eb3b9a8",
+  "position": {
+    "x": 16,
+    "y": 96,
+    "z": 3000,
+    "height": 608,
+    "width": 620,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimAirport"
+                    }
+                  },
+                  "Property": "iata_code"
+                }
+              },
+              "queryRef": "DimAirport.iata_code",
+              "nativeQueryRef": "iata_code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimAirport"
+                    }
+                  },
+                  "Property": "city"
+                }
+              },
+              "queryRef": "DimAirport.city",
+              "nativeQueryRef": "city"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Total Flights"
+                }
+              },
+              "queryRef": "FactAirportDaily.Total Flights",
+              "nativeQueryRef": "Total Flights"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "On-Time %"
+                }
+              },
+              "queryRef": "FactAirportDaily.On-Time %",
+              "nativeQueryRef": "On-Time %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cancellation Rate"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cancellation Rate",
+              "nativeQueryRef": "Cancellation Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Average Delay (min)"
+                }
+              },
+              "queryRef": "FactAirportDaily.Average Delay (min)",
+              "nativeQueryRef": "Average Delay (min)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Rank by Average Delay"
+                }
+              },
+              "queryRef": "FactAirportDaily.Rank by Average Delay",
+              "nativeQueryRef": "Rank by Average Delay"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactAirportDaily"
+                  }
+                },
+                "Property": "On-Time %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": false
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Airport scorecard (rank 1 = worst average delay)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

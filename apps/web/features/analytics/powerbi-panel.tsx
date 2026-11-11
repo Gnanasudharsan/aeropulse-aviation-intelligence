@@ -33,21 +33,20 @@ export function PowerBiPanel() {
     );
   }
   const done = [
-    "BTS star schema exported as Parquet (analytics/powerbi/data)",
-    "Power BI Project with TMDL semantic model, relationships and DAX measures",
-    "Report shell with the four report pages",
-    "Report specification and DAX reference",
+    "Complete report: 4 pages, 33 visuals, AeroPulse theme (Power BI Project / PBIR)",
+    "Semantic model: 7 tables, 10 relationships, 46 DAX measures (TMDL)",
+    "Validated against Microsoft's official report schemas, plus model-integrity checks in CI",
+    "Data source: public Parquet star schema — refreshable in the Power BI service",
   ];
   const todo = [
-    "Open AeroPulse.pbip in Power BI Desktop (Windows) and set the DataFolder parameter",
-    "Build the visuals per docs/dashboards/powerbi-report.md and validate measures",
-    "Publish to a Power BI workspace (requires a Microsoft account / license)",
-    "Set NEXT_PUBLIC_POWERBI_REPORT_URL to the Publish-to-web or embed URL",
+    "Open AeroPulse.pbip in Power BI Desktop, or upload it to a Power BI workspace",
+    "Publish to the owner's Power BI workspace (Microsoft work/school account)",
+    "File → Embed report → Publish to web, then set NEXT_PUBLIC_POWERBI_REPORT_URL",
   ];
   return (
     <Panel
-      title="Power BI report — not yet published"
-      description="No Power BI report URL is configured, so nothing is embedded here. The analytics below are AeroPulse's own interactive charts over the same data model — they are not Power BI."
+      title="Power BI report — built, awaiting publication"
+      description="The Power BI report is built and validated, but it has not been published to Power BI yet, so nothing is embedded here. The analytics below are AeroPulse's own interactive charts over the same data model — they are not Power BI."
     >
       <div className="grid gap-6 md:grid-cols-[auto_1fr_1fr]">
         <BarChart3 className="size-10 text-ap-accent" aria-hidden />

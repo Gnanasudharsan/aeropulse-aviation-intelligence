@@ -17,7 +17,7 @@ table DimCarrier
 		mode: import
 		source =
 				let
-				    Source = Parquet.Document(File.Contents(DataFolder & "dim_carrier.parquet")),
+				    Source = Parquet.Document(Binary.Buffer(Web.Contents(DataUrl, [RelativePath = "dim_carrier.parquet"]))),
 				    Typed = Table.TransformColumnTypes(Source, {{"carrier_code", type text}, {"carrier_name", type text}})
 				in
 				    Typed

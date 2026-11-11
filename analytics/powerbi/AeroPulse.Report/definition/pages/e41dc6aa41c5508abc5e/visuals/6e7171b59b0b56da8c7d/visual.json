@@ -1,0 +1,92 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "6e7171b59b0b56da8c7d",
+  "position": {
+    "x": 792,
+    "y": 468,
+    "z": 8000,
+    "height": 236,
+    "width": 472,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimDate"
+                    }
+                  },
+                  "Property": "month_start"
+                }
+              },
+              "queryRef": "DimDate.month_start",
+              "nativeQueryRef": "month_start"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - Weather"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - Weather",
+              "nativeQueryRef": "Cause Minutes - Weather"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAirportDaily"
+                    }
+                  },
+                  "Property": "Cause Minutes - NAS"
+                }
+              },
+              "queryRef": "FactAirportDaily.Cause Minutes - NAS",
+              "nativeQueryRef": "Cause Minutes - NAS"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Weather and NAS delay minutes by month'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

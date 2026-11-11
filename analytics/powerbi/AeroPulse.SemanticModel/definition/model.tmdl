@@ -10,3 +10,4 @@ ref table DimCarrier
 ref table FactAirportDaily
 ref table FactAirportHourly
 ref table FactCarrierMonthly
+ref table DimDirection
