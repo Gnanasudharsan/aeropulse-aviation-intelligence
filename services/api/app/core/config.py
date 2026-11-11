@@ -30,6 +30,10 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:3000"]
     )
     rate_limit_per_minute: int = 120
+    # Behind a trusted proxy (Vercel/Render) take the client IP from X-Forwarded-For.
+    trust_forwarded_for: bool = False
+    # psycopg server-side prepared statements; disabled (0) behind transaction poolers.
+    db_prepare_threshold: int = 5
     ingest_trigger_token: str = ""
 
     http_user_agent: str = (

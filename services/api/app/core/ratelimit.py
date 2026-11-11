@@ -15,17 +15,24 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
-EXEMPT_PREFIXES = ("/api/v1/health",)
+EXEMPT_PREFIXES = ("/api/v1/health", "/api/v1/ingest/tick")
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: ASGIApp, *, limit_per_minute: int) -> None:
+    def __init__(
+        self, app: ASGIApp, *, limit_per_minute: int, trust_forwarded_for: bool = False
+    ) -> None:
         super().__init__(app)
         self.limit = limit_per_minute
+        self.trust_forwarded_for = trust_forwarded_for
         self._windows: dict[str, tuple[int, int]] = defaultdict(lambda: (0, 0))
         self._lock = Lock()
 
     def _client_key(self, request: Request) -> str:
+        if self.trust_forwarded_for:
+            forwarded = request.headers.get("x-forwarded-for", "")
+            if forwarded:
+                return forwarded.split(",")[0].strip()
         return request.client.host if request.client else "unknown"
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:

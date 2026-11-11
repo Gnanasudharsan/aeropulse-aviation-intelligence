@@ -1,18 +1,18 @@
 name: Scheduled ingestion (production)
 
-# Free-tier hosting has no always-on worker, so GitHub Actions cron calls the API's
-# authenticated ingestion endpoint. Schedules are best-effort (GitHub may delay runs);
-# the freshness model reports any lag as "delayed"/"stale".
-# Requires repository secrets: AEROPULSE_API_URL, AEROPULSE_INGEST_TOKEN.
+# The hosted API runs on Vercel (serverless), which has no always-on worker. Every 5 minutes
+# this workflow calls POST /api/v1/ingest/tick. The API itself decides which jobs are due
+# (FAA 5 min, METAR 10 min, TAF 30 min, risk 10 min, bronze purge daily) and runs them under
+# an advisory lock, so extra or overlapping calls cannot increase upstream polling — which is
+# why no secret is required. GitHub cron is best-effort; any lag shows up as
+# "delayed"/"stale" freshness in the app, never as fabricated live data.
+#
+# Configure the repository variable AEROPULSE_API_URL (Settings → Variables → Actions).
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # FAA NAS Status (+ METAR every other run, TAF and risk below)
+    - cron: "*/5 * * * *"
   workflow_dispatch:
-    inputs:
-      job:
-        description: faa | metar | taf | risk | all
-        default: all
 
 permissions: {}
 
@@ -21,31 +21,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  ingest:
+  tick:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      API_URL: ${{ secrets.AEROPULSE_API_URL }}
-      TOKEN: ${{ secrets.AEROPULSE_INGEST_TOKEN }}
+      API_URL: ${{ vars.AEROPULSE_API_URL }}
     steps:
       - name: Skip when not configured
-        if: env.API_URL == '' || env.TOKEN == ''
-        run: echo "Ingestion secrets not configured; nothing to do."
-      - name: Trigger jobs
-        if: env.API_URL != '' && env.TOKEN != ''
+        if: env.API_URL == ''
+        run: echo "AEROPULSE_API_URL is not set; nothing to do."
+      - name: Run due ingestion jobs
+        if: env.API_URL != ''
         run: |
-          set -euo pipefail
-          minute=$(date -u +%M)
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            jobs="${{ inputs.job }}"
-          else
-            jobs="faa"
-            [ $((10#$minute % 10)) -lt 5 ] && jobs="$jobs metar risk"
-            [ $((10#$minute % 30)) -lt 5 ] && jobs="$jobs taf"
-          fi
-          for job in $jobs; do
-            # A cold-starting free instance can take ~60 s to respond.
-            curl -sS --fail-with-body --max-time 120 --retry 2 --retry-delay 10 \
-              -X POST -H "Authorization: Bearer ${TOKEN}" "${API_URL%/}/api/v1/admin/ingest/${job}"
-            echo
-          done
+          curl -sS --fail-with-body --max-time 240 --retry 2 --retry-delay 15 \
+            -X POST "${API_URL%/}/api/v1/ingest/tick"
+          echo

@@ -57,7 +57,11 @@ def create_app() -> FastAPI:
     )
 
     app.add_middleware(GZipMiddleware, minimum_size=1024)
-    app.add_middleware(RateLimitMiddleware, limit_per_minute=s.rate_limit_per_minute)
+    app.add_middleware(
+        RateLimitMiddleware,
+        limit_per_minute=s.rate_limit_per_minute,
+        trust_forwarded_for=s.trust_forwarded_for,
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=s.cors_allow_origins,

@@ -517,9 +517,12 @@ async def run_risk_job(
     return summary
 
 
-def run_maintenance() -> int:
+def run_maintenance(trigger: str = "schedule") -> int:
+    """Purge bronze payloads past retention; recorded as an ingestion run ("purge")."""
     with session_scope() as s:
+        run = db.start_run(s, "purge", trigger)
         purged = db.purge_bronze(s, get_settings().bronze_retention_days)
+        db.finish_run(s, run.id, status="success", updated=purged, details={"purged": purged})
     log.info("bronze_purged", rows=purged)
     return purged
 

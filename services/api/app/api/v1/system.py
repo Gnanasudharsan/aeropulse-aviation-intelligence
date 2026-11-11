@@ -15,6 +15,7 @@ from app.api.deps import DbSession, meta, now_utc
 from app.core.config import get_settings
 from app.db.session import get_sessionmaker
 from app.ingestion.jobs import JOBS
+from app.ingestion.tick import tick
 from app.schemas import (
     Envelope,
     HealthOut,
@@ -106,3 +107,12 @@ async def trigger_ingest(
             }
         )
     return {"data": results}
+
+
+@router.post(
+    "/ingest/tick",
+    summary="Run only the ingestion jobs that are due (for external schedulers)",
+)
+async def ingest_tick() -> dict[str, object]:
+    """Idempotent and lock-protected: extra calls cannot increase upstream polling."""
+    return {"data": await tick()}

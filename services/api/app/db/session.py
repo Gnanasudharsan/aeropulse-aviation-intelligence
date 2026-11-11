@@ -19,7 +19,12 @@ def get_engine() -> Engine:
         max_overflow=s.db_max_overflow,
         pool_pre_ping=True,  # survive serverless Postgres auto-suspend
         pool_recycle=300,
-        connect_args={"connect_timeout": 10, "application_name": "aeropulse"},
+        connect_args={
+            "connect_timeout": 10,
+            "application_name": "aeropulse",
+            # None disables prepared statements (required behind PgBouncer-style poolers).
+            "prepare_threshold": s.db_prepare_threshold or None,
+        },
     )
 
 
