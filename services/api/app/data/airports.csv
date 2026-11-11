@@ -1,0 +1,51 @@
+iata_code,icao_code,name,city,state,latitude,longitude,elevation_ft,timezone,airport_type,ourairports_id
+ATL,KATL,Hartsfield Jackson Atlanta International Airport,Atlanta,GA,33.636700,-84.428101,1026,America/New_York,large_airport,3384
+AUS,KAUS,Austin Bergstrom International Airport,Austin,TX,30.197535,-97.662015,542,America/Chicago,large_airport,3386
+BNA,KBNA,Nashville International Airport,Nashville,TN,36.124500,-86.678200,599,America/Chicago,large_airport,3420
+BOS,KBOS,Boston Logan International Airport,Boston,MA,42.361970,-71.007900,20,America/New_York,large_airport,3422
+BWI,KBWI,Baltimore/Washington International Thurgood Marshall Airport,Baltimore,MD,39.175400,-76.668297,146,America/New_York,large_airport,3435
+CLE,KCLE,Cleveland Hopkins International Airport,Cleveland,OH,41.411701,-81.849800,791,America/New_York,large_airport,3454
+CLT,KCLT,Charlotte Douglas International Airport,Charlotte,NC,35.214001,-80.943100,748,America/New_York,large_airport,3457
+CMH,KCMH,John Glenn Columbus International Airport,Columbus,OH,39.998001,-82.891899,815,America/New_York,large_airport,3458
+CVG,KCVG,Cincinnati Northern Kentucky International Airport,Cincinnati / Covington,KY,39.048801,-84.667801,896,America/New_York,large_airport,3471
+DAL,KDAL,Dallas Love Field,Dallas,TX,32.844776,-96.847653,487,America/Chicago,large_airport,3479
+DCA,KDCA,Ronald Reagan Washington National Airport,Washington,DC,38.852100,-77.037697,15,America/New_York,large_airport,3483
+DEN,KDEN,Denver International Airport,Denver,CO,39.860027,-104.673792,5431,America/Denver,large_airport,3486
+DFW,KDFW,Dallas Fort Worth International Airport,Dallas-Fort Worth,TX,32.896801,-97.038002,607,America/Chicago,large_airport,3488
+DTW,KDTW,Detroit Metropolitan Wayne County Airport,Detroit,MI,42.213770,-83.353786,645,America/Detroit,large_airport,3497
+EWR,KEWR,Newark Liberty International Airport,Newark,NJ,40.689400,-74.170545,18,America/New_York,large_airport,3521
+FLL,KFLL,Fort Lauderdale Hollywood International Airport,Fort Lauderdale,FL,26.072599,-80.152702,9,America/New_York,large_airport,3531
+HNL,PHNL,Daniel K. Inouye International Airport,"Honolulu, Oahu",HI,21.318387,-157.925670,13,Pacific/Honolulu,large_airport,5453
+HOU,KHOU,William P. Hobby Airport,Houston,TX,29.645336,-95.276812,46,America/Chicago,large_airport,3588
+IAD,KIAD,Washington Dulles International Airport,Dulles,VA,38.944500,-77.455803,312,America/New_York,large_airport,3602
+IAH,KIAH,George Bush Intercontinental Airport,Houston,TX,29.984400,-95.341400,97,America/Chicago,large_airport,3604
+IND,KIND,Indianapolis International Airport,Indianapolis,IN,39.717300,-86.294403,797,America/Indiana/Indianapolis,large_airport,3610
+JAX,KJAX,Jacksonville International Airport,Jacksonville,FL,30.492469,-81.687813,30,America/New_York,large_airport,3620
+JFK,KJFK,John F. Kennedy International Airport,New York,NY,40.639447,-73.779317,13,America/New_York,large_airport,3622
+LAS,KLAS,Harry Reid International Airport,Las Vegas,NV,36.083361,-115.151817,2181,America/Los_Angeles,large_airport,3631
+LAX,KLAX,Los Angeles International Airport,Los Angeles,CA,33.942501,-118.407997,125,America/Los_Angeles,large_airport,3632
+LGA,KLGA,LaGuardia Airport,New York,NY,40.777199,-73.872597,21,America/New_York,large_airport,3643
+MCI,KMCI,Kansas City International Airport,Kansas City,MO,39.301699,-94.713893,1026,America/Chicago,large_airport,3668
+MCO,KMCO,Orlando International Airport,Orlando,FL,28.429399,-81.308998,96,America/New_York,large_airport,3670
+MDW,KMDW,Chicago Midway International Airport,Chicago,IL,41.785999,-87.752403,620,America/Chicago,large_airport,3673
+MIA,KMIA,Miami International Airport,Miami,FL,25.796011,-80.289751,8,America/New_York,large_airport,3685
+MSP,KMSP,Minneapolis–Saint Paul International Airport / Wold–Chamberlain Field,Minneapolis,MN,44.880081,-93.221741,841,America/Chicago,large_airport,3709
+MSY,KMSY,Louis Armstrong New Orleans International Airport,New Orleans,LA,29.993401,-90.264673,4,America/Chicago,large_airport,3711
+OAK,KOAK,Oakland San Francisco Bay Airport,Oakland,CA,37.720085,-122.221184,9,America/Los_Angeles,large_airport,3744
+ORD,KORD,Chicago O'Hare International Airport,Chicago,IL,41.978600,-87.904800,680,America/Chicago,large_airport,3754
+PDX,KPDX,Portland International Airport,Portland,OR,45.588699,-122.598000,31,America/Los_Angeles,large_airport,3768
+PHL,KPHL,Philadelphia International Airport,Philadelphia,PA,39.871899,-75.241096,36,America/New_York,large_airport,3771
+PHX,KPHX,Phoenix Sky Harbor International Airport,Phoenix,AZ,33.435302,-112.005905,1135,America/Phoenix,large_airport,3772
+PIT,KPIT,Pittsburgh International Airport,Pittsburgh,PA,40.491501,-80.232903,1203,America/New_York,large_airport,3778
+RDU,KRDU,Raleigh-Durham International Airport,Raleigh/Durham,NC,35.878659,-78.787300,435,America/New_York,large_airport,3844
+RSW,KRSW,Southwest Florida International Airport,Fort Myers,FL,26.534685,-81.752816,30,America/New_York,large_airport,3858
+SAN,KSAN,San Diego International Airport,San Diego,CA,32.733601,-117.190002,17,America/Los_Angeles,large_airport,3862
+SAT,KSAT,San Antonio International Airport,San Antonio,TX,29.533701,-98.469803,809,America/Chicago,large_airport,3863
+SEA,KSEA,Seattle–Tacoma International Airport,Seattle,WA,47.447943,-122.310276,433,America/Los_Angeles,large_airport,3875
+SFO,KSFO,San Francisco International Airport,San Francisco,CA,37.619806,-122.374821,13,America/Los_Angeles,large_airport,3878
+SJC,KSJC,Mineta San Jose International Airport,San Jose,CA,37.362452,-121.929188,62,America/Los_Angeles,large_airport,3883
+SLC,KSLC,Salt Lake City International Airport,Salt Lake City,UT,40.788860,-111.979866,4227,America/Denver,large_airport,3887
+SMF,KSMF,Sacramento International Airport,Sacramento,CA,38.695400,-121.591003,27,America/Los_Angeles,large_airport,3892
+SNA,KSNA,John Wayne Orange County International Airport,Santa Ana,CA,33.675063,-117.869281,56,America/Los_Angeles,large_airport,3894
+STL,KSTL,St. Louis Lambert International Airport,St Louis,MO,38.748697,-90.370003,618,America/Chicago,large_airport,3905
+TPA,KTPA,Tampa International Airport,Tampa,FL,27.975500,-82.533203,26,America/New_York,large_airport,3926

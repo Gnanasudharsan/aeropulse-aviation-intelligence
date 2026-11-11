@@ -1,0 +1,46 @@
+# Secrets & local env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/coverage/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+# Data (raw downloads are never committed; see pipelines/historical/README.md)
+data/raw/
+data/cache/
+*.zip
+*.parquet
+!analytics/powerbi/sample/*.parquet
+
+# Power BI temp
+*.pbix.bak
+~$*
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
