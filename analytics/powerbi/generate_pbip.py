@@ -195,10 +195,11 @@ MEASURES = [
     # Time intelligence
     Measure(
         "On-Time % (Previous Month)",
-        "CALCULATE([On-Time %], DATEADD(DimDate[date], -1, MONTH))",
+        "IF(EDATE(MIN(DimDate[date]), -1) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), "
+        "CALCULATE([On-Time %], DATEADD(DimDate[date], -1, MONTH)))",
         "0.0%",
         "Time intelligence",
-        "On-time rate for the prior month of the current filter context.",
+        "On-time rate for the prior month; blank unless that month is fully loaded.",
     ),
     Measure(
         "On-Time % MoM Change (pts)",
@@ -210,10 +211,11 @@ MEASURES = [
     ),
     Measure(
         "On-Time % (Previous Year)",
-        "CALCULATE([On-Time %], SAMEPERIODLASTYEAR(DimDate[date]))",
+        "IF(EDATE(MIN(DimDate[date]), -12) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), "
+        "CALCULATE([On-Time %], SAMEPERIODLASTYEAR(DimDate[date])))",
         "0.0%",
         "Time intelligence",
-        "Same period one year earlier.",
+        "Same period one year earlier; blank unless that whole period is loaded (avoids partial comparisons).",
     ),
     Measure(
         "On-Time % YoY Change (pts)",
@@ -225,7 +227,8 @@ MEASURES = [
     ),
     Measure(
         "Flights YoY Change %",
-        "VAR prev = CALCULATE([Total Flights], SAMEPERIODLASTYEAR(DimDate[date])) "
+        "VAR prev = IF(EDATE(MIN(DimDate[date]), -12) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), "
+        "CALCULATE([Total Flights], SAMEPERIODLASTYEAR(DimDate[date]))) "
         "RETURN IF(NOT ISBLANK(prev), DIVIDE([Total Flights] - prev, prev))",
         "+0.0%;-0.0%;0.0%",
         "Time intelligence",

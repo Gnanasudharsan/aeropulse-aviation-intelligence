@@ -179,7 +179,7 @@ PAGES: list[tuple[str, str, list[Visual]]] = [
             Visual("exec-through", "card", 1064, 16, 200, 64, {"Values": [M("Data Through")]}, "Data through"),
             kpi("exec-flights", "Total Flights", 16, "Flights"),
             kpi("exec-ontime", "On-Time %", 268, "On-time rate"),
-            kpi("exec-yoy", "On-Time % YoY Change (pts)", 520, "On-time vs prior year"),
+            kpi("exec-yoy", "On-Time % YoY Change (pts)", 520, "On-time vs prior year (select ≤ 12 months)"),
             kpi("exec-cancel", "Cancellation Rate", 772, "Cancellation rate"),
             Visual(
                 "exec-delay", "card", 1024, 96, 240, 104, {"Values": [M("Average Delay (min)")]}, "Average delay (min)"

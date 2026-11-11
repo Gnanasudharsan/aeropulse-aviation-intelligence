@@ -133,8 +133,8 @@ table FactAirportDaily
 		displayFolder: Delay causes
 		lineageTag: a9611c82-e53d-5a92-9034-4cc7f38b18da
 
-	/// On-time rate for the prior month of the current filter context.
-	measure 'On-Time % (Previous Month)' = CALCULATE([On-Time %], DATEADD(DimDate[date], -1, MONTH))
+	/// On-time rate for the prior month; blank unless that month is fully loaded.
+	measure 'On-Time % (Previous Month)' = IF(EDATE(MIN(DimDate[date]), -1) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), CALCULATE([On-Time %], DATEADD(DimDate[date], -1, MONTH)))
 		formatString: 0.0%
 		displayFolder: Time intelligence
 		lineageTag: 8cf45312-ca5f-52d3-9226-01d693761e7a
@@ -145,8 +145,8 @@ table FactAirportDaily
 		displayFolder: Time intelligence
 		lineageTag: c81a2ebb-5074-5cc9-9613-87df39f34204
 
-	/// Same period one year earlier.
-	measure 'On-Time % (Previous Year)' = CALCULATE([On-Time %], SAMEPERIODLASTYEAR(DimDate[date]))
+	/// Same period one year earlier; blank unless that whole period is loaded (avoids partial comparisons).
+	measure 'On-Time % (Previous Year)' = IF(EDATE(MIN(DimDate[date]), -12) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), CALCULATE([On-Time %], SAMEPERIODLASTYEAR(DimDate[date])))
 		formatString: 0.0%
 		displayFolder: Time intelligence
 		lineageTag: b00d12ec-848d-5ca1-80dc-d8bc95c250a9
@@ -158,7 +158,7 @@ table FactAirportDaily
 		lineageTag: b3e6e1af-4768-5cba-b23e-4745eb56b14f
 
 	/// Volume growth vs same period last year.
-	measure 'Flights YoY Change %' = VAR prev = CALCULATE([Total Flights], SAMEPERIODLASTYEAR(DimDate[date])) RETURN IF(NOT ISBLANK(prev), DIVIDE([Total Flights] - prev, prev))
+	measure 'Flights YoY Change %' = VAR prev = IF(EDATE(MIN(DimDate[date]), -12) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), CALCULATE([Total Flights], SAMEPERIODLASTYEAR(DimDate[date]))) RETURN IF(NOT ISBLANK(prev), DIVIDE([Total Flights] - prev, prev))
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: Time intelligence
 		lineageTag: 7283dd53-7441-5620-9e42-b92075c41c08

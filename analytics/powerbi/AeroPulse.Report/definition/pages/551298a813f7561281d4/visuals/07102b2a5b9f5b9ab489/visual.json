@@ -47,7 +47,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'On-time vs prior year'"
+                  "Value": "'On-time vs prior year (select \u2264 12 months)'"
                 }
               }
             }

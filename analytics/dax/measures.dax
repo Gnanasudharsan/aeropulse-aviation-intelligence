@@ -88,17 +88,17 @@
 [NAS Share of Delay Minutes] =
     DIVIDE([Cause Minutes - NAS], [Total Cause Minutes])
 
-// Time intelligence · On-time rate for the prior month of the current filter context.
+// Time intelligence · On-time rate for the prior month; blank unless that month is fully loaded.
 [On-Time % (Previous Month)] =
-    CALCULATE([On-Time %], DATEADD(DimDate[date], -1, MONTH))
+    IF(EDATE(MIN(DimDate[date]), -1) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), CALCULATE([On-Time %], DATEADD(DimDate[date], -1, MONTH)))
 
 // Time intelligence · Percentage-point change vs previous month; blank if not loaded.
 [On-Time % MoM Change (pts)] =
     VAR cur = [On-Time %] VAR prev = [On-Time % (Previous Month)] RETURN IF(NOT ISBLANK(cur) && NOT ISBLANK(prev), cur - prev)
 
-// Time intelligence · Same period one year earlier.
+// Time intelligence · Same period one year earlier; blank unless that whole period is loaded (avoids partial comparisons).
 [On-Time % (Previous Year)] =
-    CALCULATE([On-Time %], SAMEPERIODLASTYEAR(DimDate[date]))
+    IF(EDATE(MIN(DimDate[date]), -12) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), CALCULATE([On-Time %], SAMEPERIODLASTYEAR(DimDate[date])))
 
 // Time intelligence · Percentage-point change vs same period last year; blank if not loaded.
 [On-Time % YoY Change (pts)] =
@@ -106,7 +106,7 @@
 
 // Time intelligence · Volume growth vs same period last year.
 [Flights YoY Change %] =
-    VAR prev = CALCULATE([Total Flights], SAMEPERIODLASTYEAR(DimDate[date])) RETURN IF(NOT ISBLANK(prev), DIVIDE([Total Flights] - prev, prev))
+    VAR prev = IF(EDATE(MIN(DimDate[date]), -12) >= CALCULATE(MIN(DimDate[date]), ALL(DimDate)), CALCULATE([Total Flights], SAMEPERIODLASTYEAR(DimDate[date]))) RETURN IF(NOT ISBLANK(prev), DIVIDE([Total Flights] - prev, prev))
 
 // Ranking · 1 = worst average delay among selected airports.
 [Rank by Average Delay] =
