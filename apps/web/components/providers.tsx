@@ -13,7 +13,8 @@ export function Providers({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             staleTime: 15_000,
-            retry: 2,
+            // Never retry when no API is configured; otherwise up to two retries.
+            retry: (count, err) => (err as { code?: string }).code !== "not_configured" && count < 2,
             retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
             refetchOnWindowFocus: true,
           },

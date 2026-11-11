@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Clock, DatabaseZap, Inbox, RotateCw, WifiOff } from "lucide-react";
+import { AlertTriangle, Clock, DatabaseZap, Inbox, RotateCw, Unplug, WifiOff } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,11 @@ export function ErrorState({
   className?: string;
 }) {
   const apiErr = error instanceof ApiError ? error : null;
-  const Icon = apiErr?.code === "network_error" ? WifiOff : apiErr?.code === "database_unavailable" ? DatabaseZap : AlertTriangle;
-  const message =
-    apiErr?.code === "network_error"
+  const notConfigured = apiErr?.code === "not_configured";
+  const Icon = notConfigured ? Unplug : apiErr?.code === "network_error" ? WifiOff : apiErr?.code === "database_unavailable" ? DatabaseZap : AlertTriangle;
+  const message = notConfigured
+    ? "This deployment is not connected to a live AeroPulse API, so no operational data is shown — nothing is simulated in its place."
+    : apiErr?.code === "network_error"
       ? "The AeroPulse API could not be reached. Live data is unavailable right now."
       : apiErr?.code === "database_unavailable"
         ? "The database is temporarily unavailable. No data is shown rather than outdated figures."
@@ -33,10 +35,10 @@ export function ErrorState({
     <div role="alert" className={cn("flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-ap-line p-8 text-center", className)}>
       <Icon className="size-6 text-ap-crit" aria-hidden />
       <div>
-        <p className="font-medium text-ap-text">{title ?? "Data unavailable"}</p>
+        <p className="font-medium text-ap-text">{notConfigured ? "Live API not connected" : (title ?? "Data unavailable")}</p>
         <p className="mt-1 max-w-md text-sm text-ap-text-2">{message}</p>
       </div>
-      {onRetry && (
+      {onRetry && !notConfigured && (
         <Button size="sm" variant="outline" onClick={onRetry} className="gap-1.5">
           <RotateCw className="size-3.5" /> Retry
         </Button>

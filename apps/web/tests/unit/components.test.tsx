@@ -59,3 +59,12 @@ describe("CategoryBar", () => {
     expect(container).toBeEmptyDOMElement();
   });
 });
+
+describe("deployment without a configured API", () => {
+  it("states that the API is not connected, without a retry button", () => {
+    render(<ErrorState error={new ApiError("x", null, "not_configured")} onRetry={() => {}} />);
+    expect(screen.getByRole("alert")).toHaveTextContent("Live API not connected");
+    expect(screen.getByRole("alert")).toHaveTextContent("nothing is simulated");
+    expect(screen.queryByRole("button", { name: /retry/i })).not.toBeInTheDocument();
+  });
+});

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 
+import { ConnectionNotice } from "@/components/layout/connection-notice";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader, SiteHeaderFallback } from "@/components/layout/site-header";
 import { Providers } from "@/components/providers";
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense fallback={<SiteHeaderFallback />}>
             <SiteHeader />
           </Suspense>
+          <ConnectionNotice />
           <main id="main" className="min-h-screen flex-1">
             {children}
           </main>

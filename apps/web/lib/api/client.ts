@@ -2,10 +2,14 @@ import { z } from "zod";
 
 import { envelope } from "./schemas";
 
-export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(
-  /\/$/,
-  "",
-);
+/**
+ * API origin. In production it must be configured explicitly; an unset value means
+ * "no live API connected" (never a guessed host, never the visitor's localhost).
+ */
+export const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? (process.env.NODE_ENV === "production" ? "" : "http://localhost:8000")
+).replace(/\/$/, "");
+export const API_CONFIGURED = API_BASE_URL !== "";
 
 export class ApiError extends Error {
   constructor(
@@ -37,6 +41,9 @@ export async function apiGet<T extends z.ZodType>(
   params?: Params,
   signal?: AbortSignal,
 ): Promise<{ data: z.infer<T>; meta: z.infer<ReturnType<typeof envelope>>["meta"] }> {
+  if (!API_CONFIGURED) {
+    throw new ApiError("This deployment is not connected to a live AeroPulse API", null, "not_configured");
+  }
   let res: Response;
   try {
     res = await fetch(buildUrl(path, params), { signal, headers: { Accept: "application/json" } });

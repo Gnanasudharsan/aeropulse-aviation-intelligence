@@ -21,7 +21,13 @@ export function LiveStats() {
     ["IFR / LIFR now", lowWx],
   ];
   if (summary.isError)
-    return <p className="text-sm text-ap-text-3">Live figures are unavailable right now — the API could not be reached.</p>;
+    return (
+      <p className="text-sm text-ap-text-3">
+        {(summary.error as { code?: string }).code === "not_configured"
+          ? "Live figures are not shown: this deployment is not connected to a live API. See the screenshots and setup in the README."
+          : "Live figures are unavailable right now — the API could not be reached."}
+      </p>
+    );
   return (
     <div>
       <dl className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-4">

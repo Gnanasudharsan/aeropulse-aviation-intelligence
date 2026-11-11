@@ -11,7 +11,8 @@ const ORDER: SourceHealth[] = ["healthy", "delayed", "stale", "unavailable"];
 
 /** Compact header pill summarising live-source health (worst of FAA + METAR). */
 export function LiveIndicator() {
-  const { data, isError, isPending } = useFreshness();
+  const { data, isError, isPending, error } = useFreshness();
+  const notConfigured = (error as { code?: string } | null)?.code === "not_configured";
   let health: SourceHealth | "offline" | "loading" = "loading";
   if (isError) health = "offline";
   else if (data) {
@@ -24,7 +25,9 @@ export function LiveIndicator() {
     health === "loading"
       ? "Connecting"
       : health === "offline"
-        ? "API offline"
+        ? notConfigured
+          ? "API not connected"
+          : "API offline"
         : health === "healthy"
           ? "Live"
           : `Data ${HEALTH_META[health].label.toLowerCase()}`;

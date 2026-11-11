@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { PageContainer, PageHeader, Panel } from "@/components/layout/page";
-import { API_BASE_URL } from "@/lib/api/client";
+import { API_BASE_URL, API_CONFIGURED } from "@/lib/api/client";
 
 export const metadata: Metadata = {
   title: "About",
@@ -55,12 +55,23 @@ export default function AboutPage() {
       </Panel>
       <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <Panel title="API">
-          <p className="text-sm text-ap-text-2">
-            Interactive OpenAPI documentation:{" "}
-            <a className="text-ap-accent hover:underline" href={`${API_BASE_URL}/api/docs`} target="_blank" rel="noreferrer">
-              {API_BASE_URL}/api/docs
-            </a>
-          </p>
+          {API_CONFIGURED ? (
+            <p className="text-sm text-ap-text-2">
+              Interactive OpenAPI documentation:{" "}
+              <a className="text-ap-accent hover:underline" href={`${API_BASE_URL}/api/docs`} target="_blank" rel="noreferrer">
+                {API_BASE_URL}/api/docs
+              </a>
+            </p>
+          ) : (
+            <p className="text-sm text-ap-text-2">
+              This deployment is not connected to a hosted API. Run the stack locally and open{" "}
+              <code className="font-mono text-xs">http://localhost:8000/api/docs</code>, or see the committed{" "}
+              <a className="text-ap-accent underline underline-offset-2" href="https://github.com/Gnanasudharsan/aeropulse-aviation-intelligence/blob/main/docs/api/README.md" target="_blank" rel="noreferrer">
+                API reference
+              </a>
+              .
+            </p>
+          )}
         </Panel>
         <Panel title="Source code">
           <p className="text-sm text-ap-text-2">
