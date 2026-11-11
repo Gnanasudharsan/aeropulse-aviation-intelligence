@@ -70,7 +70,7 @@ export function KpiTile({
       <div className="mt-3 text-3xl font-semibold tracking-tight text-ap-text sm:text-[34px]">
         {loading || value === null ? <Skeleton className="h-9 w-16 bg-white/5" /> : <AnimatedNumber value={value} />}
       </div>
-      {footer && <div className="mt-2 text-xs text-ap-text-3">{footer}</div>}
+      <div className="mt-2 min-h-4 text-xs text-ap-text-3">{footer ?? "\u00a0"}</div>
     </div>
   );
 }

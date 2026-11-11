@@ -1,0 +1,51 @@
+name: Scheduled ingestion (production)
+
+# Free-tier hosting has no always-on worker, so GitHub Actions cron calls the API's
+# authenticated ingestion endpoint. Schedules are best-effort (GitHub may delay runs);
+# the freshness model reports any lag as "delayed"/"stale".
+# Requires repository secrets: AEROPULSE_API_URL, AEROPULSE_INGEST_TOKEN.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # FAA NAS Status (+ METAR every other run, TAF and risk below)
+  workflow_dispatch:
+    inputs:
+      job:
+        description: faa | metar | taf | risk | all
+        default: all
+
+permissions: {}
+
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      API_URL: ${{ secrets.AEROPULSE_API_URL }}
+      TOKEN: ${{ secrets.AEROPULSE_INGEST_TOKEN }}
+    steps:
+      - name: Skip when not configured
+        if: env.API_URL == '' || env.TOKEN == ''
+        run: echo "Ingestion secrets not configured; nothing to do."
+      - name: Trigger jobs
+        if: env.API_URL != '' && env.TOKEN != ''
+        run: |
+          set -euo pipefail
+          minute=$(date -u +%M)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            jobs="${{ inputs.job }}"
+          else
+            jobs="faa"
+            [ $((10#$minute % 10)) -lt 5 ] && jobs="$jobs metar risk"
+            [ $((10#$minute % 30)) -lt 5 ] && jobs="$jobs taf"
+          fi
+          for job in $jobs; do
+            # A cold-starting free instance can take ~60 s to respond.
+            curl -sS --fail-with-body --max-time 120 --retry 2 --retry-delay 10 \
+              -X POST -H "Authorization: Bearer ${TOKEN}" "${API_URL%/}/api/v1/admin/ingest/${job}"
+            echo
+          done

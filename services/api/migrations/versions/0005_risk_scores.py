@@ -20,7 +20,9 @@ def upgrade() -> None:
     op.create_table(
         "risk_scores",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("airport_iata", sa.String(4), sa.ForeignKey("airports.iata_code"), nullable=False),
+        sa.Column(
+            "airport_iata", sa.String(4), sa.ForeignKey("airports.iata_code"), nullable=False
+        ),
         sa.Column("computed_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("method_version", sa.String(32), nullable=False),
         sa.Column("score", sa.Float, nullable=False),

@@ -34,7 +34,7 @@ export default function MethodologyPage() {
       />
       <SystemHealth />
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel id="status" title="Airport status rules" description="Evaluated top-down; the first matching rule wins.">
           <ol className="space-y-3">
             {STATUS_ORDER.map((s, i) => (
@@ -73,7 +73,7 @@ export default function MethodologyPage() {
         </dl>
       </Panel>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Panel title="Four clocks, never conflated">
           <ol className="list-decimal space-y-1.5 pl-4 text-sm text-ap-text-2">
             <li><strong className="text-ap-text">Observation time</strong> — when the METAR was taken or the FAA event starts.</li>

@@ -26,7 +26,21 @@ import duckdb
 REPO = Path(__file__).resolve().parents[2]
 UA = "AeroPulse/1.0 (+https://github.com/Gnanasudharsan/aeropulse-aviation-intelligence)"
 BASE = "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py"
-FIELDS = ["tmpf", "sknt", "gust", "vsby", "skyc1", "skyl1", "skyc2", "skyl2", "skyc3", "skyl3", "skyc4", "skyl4", "wxcodes"]
+FIELDS = [
+    "tmpf",
+    "sknt",
+    "gust",
+    "vsby",
+    "skyc1",
+    "skyl1",
+    "skyc2",
+    "skyl2",
+    "skyc3",
+    "skyl3",
+    "skyc4",
+    "skyl4",
+    "wxcodes",
+]
 
 
 def stations() -> list[tuple[str, str]]:
@@ -38,15 +52,29 @@ def stations() -> list[tuple[str, str]]:
 def fetch(station: str, start: str, end: str) -> str:
     y1, m1, d1 = start.split("-")
     y2, m2, d2 = end.split("-")
-    params = [("station", station), *[("data", f) for f in FIELDS],
-              ("year1", y1), ("month1", m1), ("day1", d1), ("year2", y2), ("month2", m2), ("day2", d2),
-              ("tz", "Etc/UTC"), ("format", "onlycomma"), ("latlon", "no"), ("missing", "null"),
-              ("trace", "null"), ("direct", "no"), ("report_type", "3"), ("report_type", "4")]
+    params = [
+        ("station", station),
+        *[("data", f) for f in FIELDS],
+        ("year1", y1),
+        ("month1", m1),
+        ("day1", d1),
+        ("year2", y2),
+        ("month2", m2),
+        ("day2", d2),
+        ("tz", "Etc/UTC"),
+        ("format", "onlycomma"),
+        ("latlon", "no"),
+        ("missing", "null"),
+        ("trace", "null"),
+        ("direct", "no"),
+        ("report_type", "3"),
+        ("report_type", "4"),
+    ]
     url = f"{BASE}?{urllib.parse.urlencode(params)}"
     for attempt in range(5):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})  # noqa: S310 - fixed https host
-            with urllib.request.urlopen(req, timeout=300) as resp:  # noqa: S310
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=300) as resp:
                 return resp.read().decode()
         except Exception as exc:
             print(json.dumps({"msg": "retry", "station": station, "attempt": attempt, "error": str(exc)}), flush=True)

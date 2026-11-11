@@ -1,0 +1,9 @@
+# Batch/BI scripts (run by maintainers, not request-serving code).
+line-length = 120
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF"]
+# S608: SQL here interpolates only internal file paths/constants, never user input.
+# E501: long SQL/doc strings; code is formatted by `ruff format`.
+ignore = ["S608", "E501", "S310"]

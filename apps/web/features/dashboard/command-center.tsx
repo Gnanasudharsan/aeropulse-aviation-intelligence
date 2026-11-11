@@ -92,7 +92,7 @@ export function CommandCenter() {
         </div>
       )}
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-12">
+      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-12">
         <Panel
           className="xl:col-span-8"
           title="National airport map"
@@ -106,7 +106,7 @@ export function CommandCenter() {
           }
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <ToggleGroup type="single" size="sm" value={filter} onValueChange={(v) => v && setFilter(v as Filter)} aria-label="Filter airports">
+            <ToggleGroup type="single" size="sm" value={filter} onValueChange={(v) => v && setFilter(v as Filter)} aria-label="Filter airports" className="flex-wrap">
               {FILTERS.map((f) => (
                 <ToggleGroupItem key={f.value} value={f.value} className="px-2.5 text-xs data-[state=on]:bg-ap-accent-soft data-[state=on]:text-ap-accent">
                   {f.label} <span className="tabular ml-1 text-ap-text-3">{all.filter(f.test).length}</span>
@@ -159,7 +159,7 @@ export function CommandCenter() {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-12">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
         <Panel
           className="lg:col-span-7"
           title="Recent operational changes"

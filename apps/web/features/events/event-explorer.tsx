@@ -11,7 +11,7 @@ import { PageContainer, PageHeader } from "@/components/layout/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useNow } from "@/hooks/use-now";
 import { buildUrl } from "@/lib/api/client";
 import { useAdvisories, useEvents } from "@/lib/api/hooks";
@@ -95,12 +95,18 @@ export function EventExplorer() {
         }
       />
 
-      <Tabs value={tab} onValueChange={(v) => { setTab(v as "log" | "advisories"); setPage(1); }} className="mb-3">
-        <TabsList>
-          <TabsTrigger value="log">Change log</TabsTrigger>
-          <TabsTrigger value="advisories">Advisories</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        size="sm"
+        value={tab}
+        onValueChange={(v) => { if (v) { setTab(v as "log" | "advisories"); setPage(1); } }}
+        aria-label="View"
+        className="mb-3"
+      >
+        <ToggleGroupItem value="log" className="px-3 text-xs">Change log</ToggleGroupItem>
+        <ToggleGroupItem value="advisories" className="px-3 text-xs">Advisories</ToggleGroupItem>
+      </ToggleGroup>
 
       <div className="ap-panel mb-3 grid gap-2 p-3 sm:grid-cols-2 lg:grid-cols-6">
         <label className="relative">

@@ -21,7 +21,8 @@ export function SystemHealth() {
   const now = useNow();
   const { data, isError, error, refetch } = useSystemStatus();
   if (isError) return <ErrorState error={error} onRetry={() => refetch()} />;
-  if (!data) return <PanelSkeleton lines={6} />;
+  // Reserve roughly the loaded height so the static sections below don't shift (CLS).
+  if (!data) return <PanelSkeleton lines={6} className="min-h-[980px] lg:min-h-[760px]" />;
   const s = data.data;
   return (
     <div className="space-y-4">
@@ -68,7 +69,7 @@ export function SystemHealth() {
           </table>
         </div>
       </Panel>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Panel title="Recent ingestion runs" description="Every run is audited in ingestion_runs.">
           <ul className="divide-y divide-ap-line text-xs">
             {s.recent_runs.map((r) => (
@@ -87,7 +88,7 @@ export function SystemHealth() {
               <li key={`${q.source}-${q.check_name}`} className="flex items-start gap-3 py-2">
                 <span className="mt-1 size-1.5 shrink-0 rounded-full" style={{ background: QC[q.status] }} aria-hidden />
                 <span className="w-24 shrink-0 text-ap-text-3">{q.source}</span>
-                <span className="flex-1">
+                <span className="min-w-0 flex-1">
                   <span className="text-ap-text">{q.check_name.replaceAll("_", " ")}</span>{" "}
                   <span className="text-ap-text-3">
                     = {q.observed_value ?? "—"}

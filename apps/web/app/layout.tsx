@@ -36,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense fallback={<SiteHeaderFallback />}>
             <SiteHeader />
           </Suspense>
-          <main id="main" className="flex-1">
+          <main id="main" className="min-h-screen flex-1">
             {children}
           </main>
           <SiteFooter />

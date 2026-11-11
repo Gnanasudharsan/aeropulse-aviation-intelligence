@@ -27,7 +27,6 @@ import argparse
 import csv
 import datetime as dt
 import hashlib
-import io
 import json
 import os
 import sys
@@ -47,13 +46,27 @@ UA = "AeroPulse/1.0 (+https://github.com/Gnanasudharsan/aeropulse-aviation-intel
 
 # Reporting carriers (BTS Reporting_Airline codes). Unknown codes fall back to the code itself.
 CARRIERS = {
-    "AA": "American Airlines", "AS": "Alaska Airlines", "B6": "JetBlue Airways",
-    "DL": "Delta Air Lines", "F9": "Frontier Airlines", "G4": "Allegiant Air",
-    "HA": "Hawaiian Airlines", "MQ": "Envoy Air", "NK": "Spirit Airlines",
-    "OH": "PSA Airlines", "OO": "SkyWest Airlines", "UA": "United Airlines",
-    "WN": "Southwest Airlines", "YX": "Republic Airways", "9E": "Endeavor Air",
-    "QX": "Horizon Air", "ZW": "Air Wisconsin", "G7": "GoJet Airlines", "C5": "CommuteAir",
-    "YV": "Mesa Airlines", "PT": "Piedmont Airlines",
+    "AA": "American Airlines",
+    "AS": "Alaska Airlines",
+    "B6": "JetBlue Airways",
+    "DL": "Delta Air Lines",
+    "F9": "Frontier Airlines",
+    "G4": "Allegiant Air",
+    "HA": "Hawaiian Airlines",
+    "MQ": "Envoy Air",
+    "NK": "Spirit Airlines",
+    "OH": "PSA Airlines",
+    "OO": "SkyWest Airlines",
+    "UA": "United Airlines",
+    "WN": "Southwest Airlines",
+    "YX": "Republic Airways",
+    "9E": "Endeavor Air",
+    "QX": "Horizon Air",
+    "ZW": "Air Wisconsin",
+    "G7": "GoJet Airlines",
+    "C5": "CommuteAir",
+    "YV": "Mesa Airlines",
+    "PT": "Piedmont Airlines",
 }
 
 MEASURES = """
@@ -81,11 +94,28 @@ MEASURES = """
     coalesce(sum(late_aircraft_delay), 0)::BIGINT                   AS late_aircraft_delay_min
 """
 MEASURE_COLS = [
-    "flights", "cancelled", "diverted", "ontime_den", "ontime_num", "delayed_15",
-    "cancel_carrier", "cancel_weather", "cancel_nas", "cancel_security", "bucket_early",
-    "bucket_0_14", "bucket_15_29", "bucket_30_59", "bucket_60_119", "bucket_120_plus",
-    "delay_sum_min", "carrier_delay_min", "weather_delay_min", "nas_delay_min",
-    "security_delay_min", "late_aircraft_delay_min",
+    "flights",
+    "cancelled",
+    "diverted",
+    "ontime_den",
+    "ontime_num",
+    "delayed_15",
+    "cancel_carrier",
+    "cancel_weather",
+    "cancel_nas",
+    "cancel_security",
+    "bucket_early",
+    "bucket_0_14",
+    "bucket_15_29",
+    "bucket_30_59",
+    "bucket_60_119",
+    "bucket_120_plus",
+    "delay_sum_min",
+    "carrier_delay_min",
+    "weather_delay_min",
+    "nas_delay_min",
+    "security_delay_min",
+    "late_aircraft_delay_min",
 ]
 
 
@@ -116,8 +146,8 @@ def download(y: int, m: int, raw_dir: Path) -> Path:
     url = URL.format(y=y, m=m)
     for attempt in range(4):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})  # noqa: S310 - fixed https host
-            with urllib.request.urlopen(req, timeout=600) as resp, open(f"{path}.part", "wb") as out:  # noqa: S310
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=600) as resp, open(f"{path}.part", "wb") as out:
                 while chunk := resp.read(1 << 20):
                     out.write(chunk)
             os.replace(f"{path}.part", path)
@@ -281,7 +311,7 @@ def mark_source(conn: psycopg.Connection) -> None:
         latest, total = cur.fetchone()
         if latest is None:
             return
-        month_end = (dt.date(latest.year + (latest.month == 12), latest.month % 12 + 1, 1))
+        month_end = dt.date(latest.year + (latest.month == 12), latest.month % 12 + 1, 1)
         cur.execute(
             """INSERT INTO source_status (source, display_name, source_url, expected_interval_seconds,
                      last_attempt_at, last_success_at, consecutive_failures, last_observation_at,
@@ -312,10 +342,13 @@ def export(conn: psycopg.Connection, out_dir: Path) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         for name, sql in EXPORTS.items():
             csv_path = Path(tmp) / f"{name}.csv"
-            with conn.cursor() as cur, csv_path.open("wb") as fh:
-                with cur.copy(f"COPY ({sql}) TO STDOUT WITH CSV HEADER") as cp:
-                    for chunk in cp:
-                        fh.write(chunk)
+            with (
+                conn.cursor() as cur,
+                csv_path.open("wb") as fh,
+                cur.copy(f"COPY ({sql}) TO STDOUT WITH CSV HEADER") as cp,
+            ):
+                for chunk in cp:
+                    fh.write(chunk)
             target = out_dir / f"{name}.parquet"
             con.execute(
                 f"COPY (SELECT * FROM read_csv('{csv_path}', header=true)) TO '{target}' (FORMAT parquet, COMPRESSION zstd)"
@@ -383,12 +416,25 @@ def main() -> int:
                     train_file.unlink()
                 continue
             if need_load:
-                meta = {"file": zpath.name, "sha256": digest, "rows_read": q["rows_read"], "legs": q["monitored_legs"], "quality": q}
+                meta = {
+                    "file": zpath.name,
+                    "sha256": digest,
+                    "rows_read": q["rows_read"],
+                    "legs": q["monitored_legs"],
+                    "quality": q,
+                }
                 load(conn, y, m, agg, meta)
             if args.delete_raw:
                 zpath.unlink()
-            log("month_done", month=f"{y}-{m:02d}", loaded=need_load, training=need_train, rows_read=q["rows_read"],
-                legs=q["monitored_legs"], seconds=round(time.monotonic() - started, 1))
+            log(
+                "month_done",
+                month=f"{y}-{m:02d}",
+                loaded=need_load,
+                training=need_train,
+                rows_read=q["rows_read"],
+                legs=q["monitored_legs"],
+                seconds=round(time.monotonic() - started, 1),
+            )
         mark_source(conn)
         if args.export:
             export(conn, args.export)

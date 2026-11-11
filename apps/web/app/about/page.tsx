@@ -32,7 +32,7 @@ export default function AboutPage() {
         title="A real data product, end to end"
         description="AeroPulse ingests official FAA and NOAA feeds, validates and stores them in PostgreSQL, and serves a versioned API to this web application — with historical BTS analytics modelled for Power BI."
       />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {STACK.map(([title, items]) => (
           <Panel key={title} title={title}>
             <ul className="space-y-1.5 text-sm text-ap-text-2">
@@ -53,7 +53,7 @@ export default function AboutPage() {
           ))}
         </dl>
       </Panel>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
         <Panel title="API">
           <p className="text-sm text-ap-text-2">
             Interactive OpenAPI documentation:{" "}

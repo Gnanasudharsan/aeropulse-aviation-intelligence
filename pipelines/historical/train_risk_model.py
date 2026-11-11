@@ -46,8 +46,20 @@ MIN_FLIGHTS = 5
 TEST_MONTHS = 6
 
 FEATURES = [
-    "low_visibility", "very_low_visibility", "low_ceiling", "wind_kt", "gust_kt", "thunderstorm",
-    "snow_or_freezing", "rain", "hour_sin", "hour_cos", "month_sin", "month_cos", "weekend", "airport_baseline",
+    "low_visibility",
+    "very_low_visibility",
+    "low_ceiling",
+    "wind_kt",
+    "gust_kt",
+    "thunderstorm",
+    "snow_or_freezing",
+    "rain",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "weekend",
+    "airport_baseline",
 ]
 BASELINE_FEATURES = ["airport_baseline", "hour_sin", "hour_cos"]
 
@@ -100,8 +112,11 @@ def to_frame(con: duckdb.DuckDBPyConnection) -> dict[str, np.ndarray]:
     ).fetchall()
     cols = list(zip(*rows, strict=True))
     return {
-        "airport": np.array(cols[0]), "date": np.array(cols[1]), "hour": np.array(cols[2], dtype=float),
-        "share": np.array(cols[3], dtype=float), "vis": np.array(cols[4], dtype=float),
+        "airport": np.array(cols[0]),
+        "date": np.array(cols[1]),
+        "hour": np.array(cols[2], dtype=float),
+        "share": np.array(cols[3], dtype=float),
+        "vis": np.array(cols[4], dtype=float),
         "ceiling": np.array([np.nan if c is None else c for c in cols[5]], dtype=float),
         "wind": np.array([0 if v is None else v for v in cols[6]], dtype=float),
         "gust": np.array([0 if v is None else v for v in cols[7]], dtype=float),
@@ -155,10 +170,7 @@ def main() -> None:
     test = ~train
 
     # Airport base rate from the TRAINING period only (prevents leakage into the test set).
-    baseline = {
-        a: float(y_all[train & (f["airport"] == a)].mean())
-        for a in np.unique(f["airport"][train])
-    }
+    baseline = {a: float(y_all[train & (f["airport"] == a)].mean()) for a in np.unique(f["airport"][train])}
     X = build_features(f, baseline)
     ok = ~np.isnan(X).any(axis=1)
     X, y, tr, te = X[ok], y_all[ok], train[ok], test[ok]
@@ -182,7 +194,7 @@ def main() -> None:
         "version": f"logreg-{dt.date.today():%Y%m%d}",
         "trained_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         "label": f"(departures delayed >=15 min + cancelled) / scheduled >= {LABEL_THRESHOLD} "
-                 f"for an airport-local-hour with >= {MIN_FLIGHTS} departures",
+        f"for an airport-local-hour with >= {MIN_FLIGHTS} departures",
         "features": FEATURES,
         "mean": scaler.mean_.round(6).tolist(),
         "scale": scaler.scale_.round(6).tolist(),
@@ -190,10 +202,14 @@ def main() -> None:
         "intercept": round(float(logit.intercept_[0]), 6),
         "airport_baseline": {k: round(v, 5) for k, v in baseline.items()},
         "train_period": [str(first), str(cutoff - dt.timedelta(days=1))],
-        "test_period": [str(cutoff), str(dt.date(last.year + (last.month == 12), last.month % 12 + 1, 1) - dt.timedelta(days=1))],
+        "test_period": [
+            str(cutoff),
+            str(dt.date(last.year + (last.month == 12), last.month % 12 + 1, 1) - dt.timedelta(days=1)),
+        ],
         "metrics": {
             "test": results,
-            "n_train": int(tr.sum()), "n_test": int(te.sum()),
+            "n_train": int(tr.sum()),
+            "n_test": int(te.sum()),
             "positive_rate_train": round(float(y[tr].mean()), 4),
             "positive_rate_test": round(float(y[te].mean()), 4),
             "beats_baseline": bool(beats),
@@ -222,7 +238,10 @@ def main() -> None:
         "",
         "| Model | ROC AUC | PR AUC | Brier | Log loss |",
         "|---|---|---|---|---|",
-        *[f"| {name} | {m['roc_auc']} | {m['pr_auc']} | {m['brier']} | {m['log_loss']} |" for name, m in results.items()],
+        *[
+            f"| {name} | {m['roc_auc']} | {m['pr_auc']} | {m['brier']} | {m['log_loss']} |"
+            for name, m in results.items()
+        ],
         "",
         f"**Served:** {'logistic regression (beats baseline by ≥ 0.02 AUC)' if beats else 'no model — rules baseline only (logistic did not beat the baseline by 0.02 AUC)'}.",
         "",

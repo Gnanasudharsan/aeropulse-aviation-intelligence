@@ -50,9 +50,9 @@ export function Panel({
   id?: string;
 }) {
   return (
-    <section id={id} className={cn("ap-panel flex flex-col", className)} aria-label={typeof title === "string" ? title : undefined}>
+    <section id={id} className={cn("ap-panel flex min-w-0 flex-col", className)} aria-label={typeof title === "string" ? title : undefined}>
       {(title || actions) && (
-        <div className="flex items-start justify-between gap-3 px-4 pt-4 sm:px-5">
+        <div className="flex flex-wrap items-start justify-between gap-3 px-4 pt-4 sm:px-5">
           <div>
             {title && <h2 className="text-sm font-semibold text-ap-text">{title}</h2>}
             {description && <p className="mt-0.5 text-xs leading-relaxed text-ap-text-3">{description}</p>}
@@ -60,7 +60,7 @@ export function Panel({
           {actions}
         </div>
       )}
-      <div className={cn("flex-1 p-4 sm:p-5", bodyClassName)}>{children}</div>
+      <div className={cn("min-w-0 flex-1 p-4 sm:p-5", bodyClassName)}>{children}</div>
     </section>
   );
 }

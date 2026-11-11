@@ -116,10 +116,10 @@ export function WeatherIntelligence() {
       {overview.isError ? (
         <ErrorState error={overview.error} onRetry={() => overview.refetch()} />
       ) : !o ? (
-        <div className="grid gap-4 lg:grid-cols-3"><PanelSkeleton lines={6} className="lg:col-span-2" /><PanelSkeleton lines={6} /></div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3"><PanelSkeleton lines={6} className="lg:col-span-2" /><PanelSkeleton lines={6} /></div>
       ) : (
         <>
-          <div className="grid gap-4 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <Panel className="lg:col-span-7" title="Flight categories (observed)" description="Colour = METAR flight category. Airports with no observation in 2 h are grey." bodyClassName="space-y-3">
               <MapLegend mode="category" counts={{ ...catCounts, none: o.airports.length - current.length }} />
               <AirportMap airports={o.airports} colorMode="category" className="h-[380px]" onSelect={(code) => router.push(`/airports/${code}`)} />
@@ -153,7 +153,7 @@ export function WeatherIntelligence() {
             </div>
           </div>
 
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
+          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
             {(
               [
                 ["Lowest visibility", o.lowest_visibility, "SM"],

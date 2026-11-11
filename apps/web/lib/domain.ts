@@ -107,7 +107,7 @@ export const HEX = {
   lineStrong: "rgba(168,190,211,0.22)",
   text: "#f3f8ff",
   text2: "#a8bed3",
-  text3: "#7690aa",
+  text3: "#8ea6be",
   accent: "#3ed4e8",
   ok: "#49dbaa",
   warn: "#ffb454",

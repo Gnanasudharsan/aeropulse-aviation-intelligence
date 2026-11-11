@@ -1,0 +1,39 @@
+# Render Blueprint for the AeroPulse API (free web service).
+# Database: an external PostgreSQL (e.g. Neon free tier) supplied via DATABASE_URL.
+# Scheduling: the free plan has no always-on worker, so .github/workflows/ingest.yml calls
+# POST /api/v1/admin/ingest/{job} with INGEST_TRIGGER_TOKEN.
+services:
+  - type: web
+    name: aeropulse-api
+    runtime: docker
+    rootDir: services/api
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: ohio
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    # Migrations + reference seed are idempotent and run on every start.
+    dockerCommand: >-
+      sh -c "alembic upgrade head && python -m app.cli seed &&
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DATABASE_URL
+        sync: false # set in the Render dashboard (never committed)
+      - key: CORS_ALLOW_ORIGINS
+        sync: false # e.g. https://aeropulse.vercel.app
+      - key: INGEST_TRIGGER_TOKEN
+        generateValue: true
+      # Trust X-Forwarded-For from Render's load balancer so per-client rate limiting
+      # sees real client IPs (the service is only reachable through the proxy).
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+      - key: DB_POOL_SIZE
+        value: "3"
+      - key: DB_MAX_OVERFLOW
+        value: "2"
+      - key: HTTP_USER_AGENT
+        value: AeroPulse/1.0 (+https://github.com/Gnanasudharsan/aeropulse-aviation-intelligence)

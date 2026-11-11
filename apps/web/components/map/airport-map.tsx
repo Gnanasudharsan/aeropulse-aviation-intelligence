@@ -76,7 +76,8 @@ export function AirportMap({
   // Create the map once.
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    let idleHandle: number | null = null;
+    const init = async () => {
       try {
         const lib = await import("maplibre-gl");
         if (cancelled || !container.current) return;
@@ -116,10 +117,18 @@ export function AirportMap({
       } catch {
         setFailed(true);
       }
-    })();
+    };
+    // Decorative (non-interactive) maps initialise when the browser is idle to keep
+    // hydration and Total Blocking Time low.
+    if (!interactive && typeof window.requestIdleCallback === "function") {
+      idleHandle = window.requestIdleCallback(() => void init(), { timeout: 2500 });
+    } else {
+      void init();
+    }
     const markerMap = markers.current;
     return () => {
       cancelled = true;
+      if (idleHandle !== null) window.cancelIdleCallback(idleHandle);
       markerMap.forEach(({ marker }) => marker.remove());
       markerMap.clear();
       mapRef.current?.remove();
@@ -138,11 +147,12 @@ export function AirportMap({
       const color = markerColor(a, colorMode);
       let entry = markers.current.get(a.iata_code);
       if (!entry) {
-        const el = document.createElement("button");
-        el.type = "button";
+        const el = document.createElement(interactive ? "button" : "span") as HTMLButtonElement;
+        if (interactive) el.type = "button";
+        else el.setAttribute("aria-hidden", "true");
         el.className = "ap-marker";
         el.innerHTML = `<span class="ap-marker-ring"></span><span class="ap-marker-dot"></span><span class="ap-marker-label">${a.iata_code}</span>`;
-        el.addEventListener("click", (ev) => {
+        if (interactive) el.addEventListener("click", (ev) => {
           ev.stopPropagation();
           onSelectRef.current?.(a.iata_code);
         });
@@ -156,10 +166,12 @@ export function AirportMap({
             .addTo(map);
         };
         const hide = () => popupRef.current?.remove();
-        el.addEventListener("mouseenter", show);
-        el.addEventListener("focus", show);
-        el.addEventListener("mouseleave", hide);
-        el.addEventListener("blur", hide);
+        if (interactive) {
+          el.addEventListener("mouseenter", show);
+          el.addEventListener("focus", show);
+          el.addEventListener("mouseleave", hide);
+          el.addEventListener("blur", hide);
+        }
         const marker = new lib.Marker({ element: el }).setLngLat([a.longitude, a.latitude]).addTo(map);
         entry = { marker, el };
         markers.current.set(a.iata_code, entry);
@@ -170,7 +182,7 @@ export function AirportMap({
       el.dataset.status = a.status;
       el.dataset.emphasis = String(a.status === "critical" || a.status === "warning" || a.status === "weather");
       el.dataset.selected = String(selected === a.iata_code);
-      el.setAttribute(
+      if (interactive) el.setAttribute(
         "aria-label",
         `${a.iata_code} ${a.name}: ${STATUS_META[a.status].label}${a.flight_category ? `, ${a.flight_category}` : ""}`,
       );
@@ -181,7 +193,7 @@ export function AirportMap({
         markers.current.delete(code);
       }
     }
-  }, [airports, colorMode, ready, selected]);
+  }, [airports, colorMode, ready, selected, interactive]);
 
   const flyTo = (target: "conus" | "hawaii") => {
     const map = mapRef.current;
@@ -191,7 +203,11 @@ export function AirportMap({
   };
 
   return (
-    <div className={cn("relative overflow-hidden rounded-xl bg-[#070d18]", className)}>
+    <div
+      className={cn("relative overflow-hidden rounded-xl bg-[#070d18]", className)}
+      role={interactive ? undefined : "img"}
+      aria-label={interactive ? undefined : `Map of ${airports.length} monitored U.S. airports coloured by status`}
+    >
       <div ref={container} className="h-full w-full" />
       {!ready && !failed && (
         <div className="absolute inset-0 grid place-items-center text-xs text-ap-text-3">Loading map…</div>
@@ -212,7 +228,7 @@ export function AirportMap({
         </div>
       )}
       <style>{`
-        .ap-marker { width: 22px; height: 22px; display: grid; place-items: center; cursor: pointer; background: none; border: 0; padding: 0; }
+        .ap-marker { width: 24px; height: 24px; display: grid; place-items: center; cursor: pointer; background: none; border: 0; padding: 0; }
         .ap-marker:focus-visible { outline: 2px solid ${HEX.accent}; outline-offset: 2px; border-radius: 999px; }
         .ap-marker-dot { width: 9px; height: 9px; border-radius: 999px; background: var(--c); box-shadow: 0 0 0 2px #070d18, 0 0 10px var(--c); transition: transform .15s ease; }
         .ap-marker[data-emphasis="true"] .ap-marker-dot { width: 12px; height: 12px; }

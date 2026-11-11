@@ -38,6 +38,8 @@ echarts.use([
 
 /** Shared recessive axis / grid / tooltip styling (thin marks, quiet chrome). */
 export const baseOption: EChartsOption = {
+  // Time axes render in UTC, consistent with every "Z" timestamp in the app.
+  useUTC: true,
   backgroundColor: "transparent",
   textStyle: { fontFamily: "var(--font-geist-sans), system-ui, sans-serif", color: HEX.text2 },
   animationDuration: 500,
@@ -50,7 +52,8 @@ export const baseOption: EChartsOption = {
     axisPointer: { type: "line", lineStyle: { color: HEX.lineStrong } },
     confine: true,
   },
-  legend: { top: 0, right: 0, textStyle: { color: HEX.text2, fontSize: 11 }, itemWidth: 12, itemHeight: 3, icon: "rect" },
+  // Single-series charts are titled instead of carrying a legend; multi-series charts opt in.
+  legend: { show: false, top: 0, right: 64, textStyle: { color: HEX.text2, fontSize: 11 }, itemWidth: 12, itemHeight: 3, icon: "rect" },
 };
 
 export const axisStyle = {
@@ -60,6 +63,20 @@ export const axisStyle = {
   splitLine: { lineStyle: { color: HEX.line } },
   nameTextStyle: { color: HEX.text3, fontSize: 11 },
 } as const;
+
+type Obj = Record<string, unknown>;
+const isObj = (v: unknown): v is Obj => typeof v === "object" && v !== null && !Array.isArray(v);
+
+/** Shallow-merge with the base theme, but deep-merge the shared chrome objects. */
+function mergeOption(option: EChartsOption): EChartsOption {
+  const merged: Obj = { ...(baseOption as Obj), ...(option as Obj) };
+  for (const key of ["tooltip", "legend", "grid", "textStyle"] as const) {
+    const base = (baseOption as Obj)[key];
+    const own = (option as Obj)[key];
+    if (isObj(base) && isObj(own)) merged[key] = { ...base, ...own };
+  }
+  return merged as EChartsOption;
+}
 
 export interface TableView {
   columns: string[];
@@ -133,7 +150,7 @@ export function EChart({
         <div role="img" aria-label={ariaLabel}>
           <ReactEChartsCore
             echarts={echarts}
-            option={{ ...baseOption, ...option }}
+            option={mergeOption(option)}
             style={{ height, width: "100%" }}
             notMerge
             lazyUpdate

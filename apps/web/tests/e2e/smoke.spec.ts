@@ -6,6 +6,8 @@ const ROUTES: [string, RegExp][] = [
   ["/airports", /50 monitored U\.S\. airports/],
   ["/airports/JFK", /JFK/],
   ["/weather", /Observed weather across the network/],
+  ["/analytics", /Airport performance analytics/],
+  ["/risk", /Where conditions point to disruption/],
   ["/events", /Operational events/],
   ["/methodology", /Data sources, freshness and definitions/],
   ["/about", /A real data product/],
@@ -38,6 +40,13 @@ test("navigation reaches every primary section", async ({ page, isMobile }) => {
 test("unknown airport shows a helpful not-monitored state", async ({ page }) => {
   await page.goto("/airports/ZZZ");
   await expect(page.getByText("ZZZ is not a monitored airport")).toBeVisible();
+});
+
+test("analytics never presents a Power BI report that is not configured", async ({ page }) => {
+  await page.goto("/analytics");
+  // With NEXT_PUBLIC_POWERBI_REPORT_URL unset, no iframe is rendered and the state is explicit.
+  await expect(page.getByText(/Power BI report — not yet published/)).toBeVisible();
+  await expect(page.locator("iframe")).toHaveCount(0);
 });
 
 test("airport search filters the explorer", async ({ page }) => {
