@@ -34,7 +34,8 @@ cd services/api && uv run python -c "import json; from app.main import app; prin
 | GET | `/api/v1/operations/events` | Paginated change log (`created`/`updated`/`cleared`/`reopened`); `format=csv` exports up to 10 000 rows. |
 | GET | `/api/v1/weather/overview` | National observed-weather picture, extremes, advisory/IFR co-occurrence. |
 | GET | `/api/v1/weather/trends?airports=JFK,ORD&hours=48` | Hourly series for up to 8 airports. |
-| POST | `/api/v1/admin/ingest/{faa|metar|taf|all}` | Runs ingestion now. Requires `Authorization: Bearer $INGEST_TRIGGER_TOKEN`; returns 404 when no token is configured. |
+| POST | `/api/v1/ingest/tick` | Runs only the jobs that are due (FAA, METAR, TAF, risk, purge) under an advisory lock; safe to call without auth. Used by the production scheduler. |
+| POST | `/api/v1/admin/ingest/{faa|metar|taf|risk|all}` | Runs ingestion now. Requires `Authorization: Bearer $INGEST_TRIGGER_TOKEN`; returns 404 when no token is configured. |
 
 Historical (`/airports/{code}/history`, `/analytics/overview`) and risk endpoints are
 added with their corresponding phases and documented here when implemented.

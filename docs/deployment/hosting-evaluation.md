@@ -19,6 +19,13 @@ paid resources created without explicit owner approval.
 
 ## Selected production topology (zero cost)
 
+> **Update (deployed):** the API runs as a Vercel Python serverless function and the
+> database is Neon via the Vercel Marketplace, so a single already-authenticated account
+> hosts everything; scheduling uses GitHub Actions calling the secret-free
+> `/api/v1/ingest/tick` endpoint. The Render blueprint below remains a working alternative.
+
+Original plan:
+
 ```
 Vercel (Next.js) ──HTTPS──> Render free (FastAPI) ──> Neon Postgres (free)
                                     ▲

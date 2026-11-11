@@ -246,15 +246,23 @@ is also reachable from the accessible list views.
 
 ## Deployment
 
-**Current status (honest):** the web app is deployed on Vercel at
-<https://aeropulse-aviation-intelligence.vercel.app> and redeploys automatically from `main`.
-The hosted data API (Render + Neon) is **not yet connected**, so the public site runs as a
-front-end preview: it shows a site-wide notice and "Live API not connected" states instead of
-data — nothing is simulated. The full live system runs locally with Docker Compose (see
-[screenshots](#screenshots)); connecting the hosted API only requires setting
-`NEXT_PUBLIC_API_BASE_URL` in Vercel.
+**Live:** web <https://aeropulse-aviation-intelligence.vercel.app> · API
+<https://aeropulse-api-nine.vercel.app/api/docs> · health
+<https://aeropulse-api-nine.vercel.app/api/v1/health>.
 
-Zero-cost topology: Vercel (web) + Render free (API container) + Neon free (PostgreSQL) +
+| Component | Host (free tier) | Deploys |
+|---|---|---|
+| Web (Next.js) | Vercel project `aeropulse-aviation-intelligence`, root `apps/web` | every push to `main` |
+| API (FastAPI) | Vercel Python serverless, project `aeropulse-api`, root `services/api` | every push to `main` |
+| Database | Neon PostgreSQL 18 (+TimescaleDB extension) via the Vercel Marketplace, region `iad1` | Alembic migrations |
+| Scheduler | GitHub Actions cron → `POST /api/v1/ingest/tick` every 5 min | — |
+
+The tick endpoint runs only jobs whose interval has elapsed, under a PostgreSQL advisory
+lock, so it needs no secret and extra calls cannot increase upstream polling. GitHub cron is
+best-effort; any lag appears as `delayed`/`stale` freshness in the app. The 24 months of BTS
+facts were copied from the local load into Neon (identical row counts and totals).
+
+Alternative topology (Render container + external Postgres):  Vercel (web) + Render free (API container) + Neon free (PostgreSQL) +
 GitHub Actions cron (ingestion triggers). Step-by-step:
 [`docs/deployment`](docs/deployment/README.md); options evaluated in
 [`hosting-evaluation.md`](docs/deployment/hosting-evaluation.md).

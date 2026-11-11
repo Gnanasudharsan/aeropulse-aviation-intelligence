@@ -1,16 +1,32 @@
 # Deployment
 
-See [hosting-evaluation.md](hosting-evaluation.md) for the options considered. The zero-cost
-production topology is:
+## Production (live)
 
 ```mermaid
 flowchart LR
-  U[Browser] -->|HTTPS| V[Vercel · Next.js]
-  U -->|HTTPS, CORS allow-list| R[Render free · FastAPI container]
-  R -->|TLS| N[(Neon PostgreSQL free)]
-  G[GitHub Actions cron */5] -->|POST /api/v1/admin/ingest/* · bearer token| R
-  R -->|polls| FAA[FAA NAS Status] & AWC[NOAA AWC]
+  U[Browser] -->|HTTPS| W[Vercel · Next.js<br/>aeropulse-aviation-intelligence.vercel.app]
+  U -->|HTTPS · CORS allow-list| A[Vercel Python · FastAPI<br/>aeropulse-api-nine.vercel.app]
+  A -->|TLS · pooled| N[(Neon PostgreSQL · iad1)]
+  G[GitHub Actions cron */5] -->|POST /api/v1/ingest/tick| A
+  A -->|polls when due| FAA[FAA NAS Status] & AWC[NOAA AWC]
 ```
+
+* **Web** — Vercel project `aeropulse-aviation-intelligence` (root `apps/web`, Node 24),
+  env `NEXT_PUBLIC_API_BASE_URL`. Deploys on every push to `main`.
+* **API** — Vercel project `aeropulse-api` (root `services/api`, framework FastAPI, entry
+  `index.py`). Env: `DATABASE_URL` (Neon, injected by the integration), `APP_ENV=production`,
+  `CORS_ALLOW_ORIGINS`, `TRUST_FORWARDED_FOR=true`, `DB_PREPARE_THRESHOLD=0` (pooler),
+  `DB_POOL_SIZE=2`, `RATE_LIMIT_PER_MINUTE=300`, `HTTP_USER_AGENT`.
+* **Database** — Neon free plan via the Vercel Marketplace. Migrations are run with
+  `DATABASE_URL=$DATABASE_URL_UNPOOLED uv run alembic upgrade head` and
+  `python -m app.cli seed`.
+* **Scheduler** — `.github/workflows/ingest.yml` (repository variable `AEROPULSE_API_URL`).
+  The tick endpoint runs only due jobs under an advisory lock (no secret required).
+
+Re-deploying after an environment change: `vercel redeploy <deployment-url> --target production`
+(Next.js inlines `NEXT_PUBLIC_*` at build time).
+
+## Alternative: Render container + Neon
 
 ## 1. Database (Neon)
 

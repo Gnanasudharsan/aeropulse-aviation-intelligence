@@ -86,6 +86,7 @@
         "faa",
         "metar",
         "taf",
+        "risk",
         "all"
        ],
        "type": "string",
@@ -118,6 +119,213 @@
          "type": "object",
          "additionalProperties": true,
          "title": "Response Trigger Ingest Api V1 Admin Ingest  Job  Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/ingest/tick": {
+   "post": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Run only the ingestion jobs that are due (for external schedulers)",
+    "description": "Idempotent and lock-protected: extra calls cannot increase upstream polling.",
+    "operationId": "ingest_tick_api_v1_ingest_tick_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Ingest Tick Api V1 Ingest Tick Post"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/analytics/overview": {
+   "get": {
+    "tags": [
+     "analytics"
+    ],
+    "summary": "Historical performance (BTS)",
+    "operationId": "overview_api_v1_analytics_overview_get",
+    "parameters": [
+     {
+      "name": "start",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "YYYY-MM",
+       "title": "Start"
+      },
+      "description": "YYYY-MM"
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "YYYY-MM",
+       "title": "End"
+      },
+      "description": "YYYY-MM"
+     },
+     {
+      "name": "direction",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "arrival",
+        "departure"
+       ],
+       "type": "string",
+       "default": "arrival",
+       "title": "Direction"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_AnalyticsOut_"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/airports/{code}/history": {
+   "get": {
+    "tags": [
+     "analytics",
+     "airports"
+    ],
+    "summary": "Historical performance for one airport (BTS)",
+    "operationId": "airport_history_api_v1_airports__code__history_get",
+    "parameters": [
+     {
+      "name": "code",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "maxLength": 4,
+       "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code",
+       "title": "Code"
+      },
+      "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code"
+     },
+     {
+      "name": "start",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "YYYY-MM",
+       "title": "Start"
+      },
+      "description": "YYYY-MM"
+     },
+     {
+      "name": "end",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "YYYY-MM",
+       "title": "End"
+      },
+      "description": "YYYY-MM"
+     },
+     {
+      "name": "direction",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "arrival",
+        "departure"
+       ],
+       "type": "string",
+       "default": "arrival",
+       "title": "Direction"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_AnalyticsOut_"
         }
        }
       }
@@ -942,6 +1150,84 @@
      }
     }
    }
+  },
+  "/api/v1/risk/airports": {
+   "get": {
+    "tags": [
+     "risk"
+    ],
+    "summary": "Latest risk indicator per airport",
+    "operationId": "risk_overview_api_v1_risk_airports_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_RiskOverviewOut_"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/risk/airports/{code}": {
+   "get": {
+    "tags": [
+     "risk"
+    ],
+    "summary": "Risk indicator history",
+    "operationId": "airport_risk_api_v1_risk_airports__code__get",
+    "parameters": [
+     {
+      "name": "code",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "maxLength": 4,
+       "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code",
+       "title": "Code"
+      },
+      "description": "IATA (e.g. JFK) or ICAO (e.g. KJFK) code"
+     },
+     {
+      "name": "hours",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 168,
+       "minimum": 1,
+       "default": 48,
+       "title": "Hours"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Envelope_AirportRiskOut_"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
@@ -1671,6 +1957,160 @@
     ],
     "title": "AirportDetailOut"
    },
+   "AirportMonthCell": {
+    "properties": {
+     "airport": {
+      "type": "string",
+      "title": "Airport"
+     },
+     "month": {
+      "type": "string",
+      "format": "date",
+      "title": "Month"
+     },
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     }
+    },
+    "type": "object",
+    "required": [
+     "airport",
+     "month",
+     "flights",
+     "ontime_rate",
+     "avg_delay_min"
+    ],
+    "title": "AirportMonthCell"
+   },
+   "AirportRank": {
+    "properties": {
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "cancelled": {
+      "type": "integer",
+      "title": "Cancelled"
+     },
+     "diverted": {
+      "type": "integer",
+      "title": "Diverted"
+     },
+     "delayed_15": {
+      "type": "integer",
+      "title": "Delayed 15"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     },
+     "airport": {
+      "type": "string",
+      "title": "Airport"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "rank_ontime": {
+      "type": "integer",
+      "title": "Rank Ontime"
+     }
+    },
+    "type": "object",
+    "required": [
+     "flights",
+     "cancelled",
+     "diverted",
+     "delayed_15",
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min",
+     "airport",
+     "name",
+     "rank_ontime"
+    ],
+    "title": "AirportRank"
+   },
+   "AirportRiskOut": {
+    "properties": {
+     "latest": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RiskScoreOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "history": {
+      "items": {
+       "$ref": "#/components/schemas/RiskPoint"
+      },
+      "type": "array",
+      "title": "History"
+     }
+    },
+    "type": "object",
+    "required": [
+     "latest",
+     "history"
+    ],
+    "title": "AirportRiskOut"
+   },
    "AirportSummaryOut": {
     "properties": {
      "iata_code": {
@@ -1920,6 +2360,228 @@
     ],
     "title": "AirportWeatherOut"
    },
+   "AnalyticsOut": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "direction": {
+      "type": "string",
+      "enum": [
+       "arrival",
+       "departure"
+      ],
+      "title": "Direction"
+     },
+     "coverage": {
+      "$ref": "#/components/schemas/Coverage"
+     },
+     "totals": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/PerfRow"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "previous_year": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Comparison"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "network": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Comparison"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "monthly": {
+      "items": {
+       "$ref": "#/components/schemas/MonthRow"
+      },
+      "type": "array",
+      "title": "Monthly"
+     },
+     "airports": {
+      "items": {
+       "$ref": "#/components/schemas/AirportRank"
+      },
+      "type": "array",
+      "title": "Airports"
+     },
+     "causes_minutes": {
+      "items": {
+       "$ref": "#/components/schemas/BucketRow"
+      },
+      "type": "array",
+      "title": "Causes Minutes"
+     },
+     "cancellation_causes": {
+      "items": {
+       "$ref": "#/components/schemas/BucketRow"
+      },
+      "type": "array",
+      "title": "Cancellation Causes"
+     },
+     "delay_distribution": {
+      "items": {
+       "$ref": "#/components/schemas/BucketRow"
+      },
+      "type": "array",
+      "title": "Delay Distribution"
+     },
+     "day_of_week": {
+      "items": {
+       "$ref": "#/components/schemas/DowRow"
+      },
+      "type": "array",
+      "title": "Day Of Week"
+     },
+     "hourly": {
+      "items": {
+       "$ref": "#/components/schemas/HourRow"
+      },
+      "type": "array",
+      "title": "Hourly"
+     },
+     "carriers": {
+      "items": {
+       "$ref": "#/components/schemas/CarrierRow"
+      },
+      "type": "array",
+      "title": "Carriers"
+     },
+     "airport_monthly": {
+      "items": {
+       "$ref": "#/components/schemas/AirportMonthCell"
+      },
+      "type": "array",
+      "title": "Airport Monthly",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "available",
+     "direction",
+     "coverage",
+     "totals",
+     "previous_year",
+     "monthly",
+     "airports",
+     "causes_minutes",
+     "cancellation_causes",
+     "delay_distribution",
+     "day_of_week",
+     "hourly",
+     "carriers"
+    ],
+    "title": "AnalyticsOut"
+   },
+   "BucketRow": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "value"
+    ],
+    "title": "BucketRow"
+   },
+   "CarrierRow": {
+    "properties": {
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "cancelled": {
+      "type": "integer",
+      "title": "Cancelled"
+     },
+     "diverted": {
+      "type": "integer",
+      "title": "Diverted"
+     },
+     "delayed_15": {
+      "type": "integer",
+      "title": "Delayed 15"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     },
+     "carrier_code": {
+      "type": "string",
+      "title": "Carrier Code"
+     },
+     "carrier_name": {
+      "type": "string",
+      "title": "Carrier Name"
+     }
+    },
+    "type": "object",
+    "required": [
+     "flights",
+     "cancelled",
+     "diverted",
+     "delayed_15",
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min",
+     "carrier_code",
+     "carrier_name"
+    ],
+    "title": "CarrierRow"
+   },
    "CategoryCount": {
     "properties": {
      "category": {
@@ -1970,6 +2632,206 @@
     ],
     "title": "CloudLayer"
    },
+   "Comparison": {
+    "properties": {
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     },
+     "flights": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Flights"
+     }
+    },
+    "type": "object",
+    "required": [
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min",
+     "flights"
+    ],
+    "title": "Comparison"
+   },
+   "Coverage": {
+    "properties": {
+     "first_month": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Month"
+     },
+     "last_month": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Month"
+     },
+     "months_loaded": {
+      "type": "integer",
+      "title": "Months Loaded"
+     },
+     "selected_start": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Selected Start"
+     },
+     "selected_end": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Selected End"
+     },
+     "source": {
+      "type": "string",
+      "title": "Source",
+      "default": "BTS Reporting Carrier On-Time Performance (U.S. DOT)"
+     },
+     "lag_note": {
+      "type": "string",
+      "title": "Lag Note",
+      "default": "BTS publishes monthly with a ~2-3 month lag."
+     }
+    },
+    "type": "object",
+    "required": [
+     "first_month",
+     "last_month",
+     "months_loaded",
+     "selected_start",
+     "selected_end"
+    ],
+    "title": "Coverage"
+   },
+   "DowRow": {
+    "properties": {
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "cancelled": {
+      "type": "integer",
+      "title": "Cancelled"
+     },
+     "diverted": {
+      "type": "integer",
+      "title": "Diverted"
+     },
+     "delayed_15": {
+      "type": "integer",
+      "title": "Delayed 15"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     },
+     "iso_dow": {
+      "type": "integer",
+      "title": "Iso Dow"
+     }
+    },
+    "type": "object",
+    "required": [
+     "flights",
+     "cancelled",
+     "diverted",
+     "delayed_15",
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min",
+     "iso_dow"
+    ],
+    "title": "DowRow"
+   },
    "Envelope_AdvisoryDetailOut_": {
     "properties": {
      "data": {
@@ -2002,6 +2864,22 @@
     ],
     "title": "Envelope[AirportDetailOut]"
    },
+   "Envelope_AirportRiskOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/AirportRiskOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[AirportRiskOut]"
+   },
    "Envelope_AirportWeatherOut_": {
     "properties": {
      "data": {
@@ -2018,6 +2896,22 @@
     ],
     "title": "Envelope[AirportWeatherOut]"
    },
+   "Envelope_AnalyticsOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/AnalyticsOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[AnalyticsOut]"
+   },
    "Envelope_OperationsSummaryOut_": {
     "properties": {
      "data": {
@@ -2033,6 +2927,22 @@
      "meta"
     ],
     "title": "Envelope[OperationsSummaryOut]"
+   },
+   "Envelope_RiskOverviewOut_": {
+    "properties": {
+     "data": {
+      "$ref": "#/components/schemas/RiskOverviewOut"
+     },
+     "meta": {
+      "$ref": "#/components/schemas/Meta"
+     }
+    },
+    "type": "object",
+    "required": [
+     "data",
+     "meta"
+    ],
+    "title": "Envelope[RiskOverviewOut]"
    },
    "Envelope_SystemStatusOut_": {
     "properties": {
@@ -2421,6 +3331,75 @@
     ],
     "title": "HealthOut"
    },
+   "HourRow": {
+    "properties": {
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "cancelled": {
+      "type": "integer",
+      "title": "Cancelled"
+     },
+     "diverted": {
+      "type": "integer",
+      "title": "Diverted"
+     },
+     "delayed_15": {
+      "type": "integer",
+      "title": "Delayed 15"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     },
+     "hour_local": {
+      "type": "integer",
+      "title": "Hour Local"
+     }
+    },
+    "type": "object",
+    "required": [
+     "flights",
+     "cancelled",
+     "diverted",
+     "delayed_15",
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min",
+     "hour_local"
+    ],
+    "title": "HourRow"
+   },
    "IngestionRunOut": {
     "properties": {
      "id": {
@@ -2557,6 +3536,76 @@
      "generated_at"
     ],
     "title": "Meta"
+   },
+   "MonthRow": {
+    "properties": {
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "cancelled": {
+      "type": "integer",
+      "title": "Cancelled"
+     },
+     "diverted": {
+      "type": "integer",
+      "title": "Diverted"
+     },
+     "delayed_15": {
+      "type": "integer",
+      "title": "Delayed 15"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     },
+     "month": {
+      "type": "string",
+      "format": "date",
+      "title": "Month"
+     }
+    },
+    "type": "object",
+    "required": [
+     "flights",
+     "cancelled",
+     "diverted",
+     "delayed_15",
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min",
+     "month"
+    ],
+    "title": "MonthRow"
    },
    "OperationalEventOut": {
     "properties": {
@@ -2754,6 +3803,70 @@
     ],
     "title": "OperationsSummaryOut"
    },
+   "PerfRow": {
+    "properties": {
+     "flights": {
+      "type": "integer",
+      "title": "Flights"
+     },
+     "cancelled": {
+      "type": "integer",
+      "title": "Cancelled"
+     },
+     "diverted": {
+      "type": "integer",
+      "title": "Diverted"
+     },
+     "delayed_15": {
+      "type": "integer",
+      "title": "Delayed 15"
+     },
+     "ontime_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ontime Rate"
+     },
+     "cancel_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cancel Rate"
+     },
+     "avg_delay_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Delay Min"
+     }
+    },
+    "type": "object",
+    "required": [
+     "flights",
+     "cancelled",
+     "diverted",
+     "delayed_15",
+     "ontime_rate",
+     "cancel_rate",
+     "avg_delay_min"
+    ],
+    "title": "PerfRow"
+   },
    "QualityCheckOut": {
     "properties": {
      "source": {
@@ -2818,6 +3931,252 @@
      "checked_at"
     ],
     "title": "QualityCheckOut"
+   },
+   "RiskComponent": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "points": {
+      "type": "number",
+      "title": "Points"
+     },
+     "max_points": {
+      "type": "number",
+      "title": "Max Points"
+     },
+     "detail": {
+      "type": "string",
+      "title": "Detail"
+     },
+     "source": {
+      "type": "string",
+      "title": "Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "label",
+     "points",
+     "max_points",
+     "detail",
+     "source"
+    ],
+    "title": "RiskComponent"
+   },
+   "RiskOverviewOut": {
+    "properties": {
+     "method_version": {
+      "type": "string",
+      "title": "Method Version"
+     },
+     "computed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Computed At"
+     },
+     "is_stale": {
+      "type": "boolean",
+      "title": "Is Stale"
+     },
+     "category_counts": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Category Counts"
+     },
+     "airports": {
+      "items": {
+       "$ref": "#/components/schemas/RiskScoreOut"
+      },
+      "type": "array",
+      "title": "Airports"
+     },
+     "model": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model"
+     },
+     "disclaimer": {
+      "type": "string",
+      "title": "Disclaimer",
+      "default": "A risk score summarises conditions associated with disruption. It is not a confirmed delay and does not predict the outcome of any specific flight."
+     }
+    },
+    "type": "object",
+    "required": [
+     "method_version",
+     "computed_at",
+     "is_stale",
+     "category_counts",
+     "airports",
+     "model"
+    ],
+    "title": "RiskOverviewOut"
+   },
+   "RiskPoint": {
+    "properties": {
+     "computed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Computed At"
+     },
+     "score": {
+      "type": "number",
+      "title": "Score"
+     },
+     "category": {
+      "type": "string",
+      "title": "Category"
+     },
+     "model_probability": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model Probability"
+     }
+    },
+    "type": "object",
+    "required": [
+     "computed_at",
+     "score",
+     "category",
+     "model_probability"
+    ],
+    "title": "RiskPoint"
+   },
+   "RiskScoreOut": {
+    "properties": {
+     "airport_iata": {
+      "type": "string",
+      "title": "Airport Iata"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "computed_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Computed At"
+     },
+     "method_version": {
+      "type": "string",
+      "title": "Method Version"
+     },
+     "score": {
+      "type": "number",
+      "title": "Score"
+     },
+     "category": {
+      "type": "string",
+      "title": "Category"
+     },
+     "components": {
+      "items": {
+       "$ref": "#/components/schemas/RiskComponent"
+      },
+      "type": "array",
+      "title": "Components"
+     },
+     "missing_inputs": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Missing Inputs"
+     },
+     "model_version": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model Version"
+     },
+     "model_probability": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model Probability"
+     },
+     "model_contributions": {
+      "anyOf": [
+       {
+        "items": {
+         "additionalProperties": true,
+         "type": "object"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Model Contributions"
+     },
+     "inputs_as_of": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Inputs As Of"
+     }
+    },
+    "type": "object",
+    "required": [
+     "airport_iata",
+     "computed_at",
+     "method_version",
+     "score",
+     "category",
+     "components",
+     "missing_inputs",
+     "model_version",
+     "model_probability",
+     "model_contributions",
+     "inputs_as_of"
+    ],
+    "title": "RiskScoreOut"
    },
    "RunwayConfigOut": {
     "properties": {
