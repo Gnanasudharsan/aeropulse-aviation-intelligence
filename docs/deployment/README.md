@@ -31,8 +31,8 @@ Re-deploying after an environment change: `vercel redeploy <deployment-url> --ta
 ## 1. Database (Neon)
 
 1. Create a free Neon project (PostgreSQL 16) and copy the **pooled** connection string.
-2. TimescaleDB is not available on Neon; migration `0002` detects this and skips the
-   hypertable (ADR-004). Everything else is identical.
+2. Migration `0002` creates the TimescaleDB hypertable when the extension is available
+   (it is on Neon's PostgreSQL 18) and skips it otherwise (ADR-004).
 3. Optional historical load (from a machine with the repo):
    `DATABASE_URL=… uv run --project services/api --group pipeline python pipelines/historical/bts_pipeline.py --start 2025-09 --end 2026-08 --delete-raw`
    (≈ 40 MB for 12 months of aggregates; stay within the free storage quota).

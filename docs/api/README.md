@@ -37,5 +37,6 @@ cd services/api && uv run python -c "import json; from app.main import app; prin
 | POST | `/api/v1/ingest/tick` | Runs only the jobs that are due (FAA, METAR, TAF, risk, purge) under an advisory lock; safe to call without auth. Used by the production scheduler. |
 | POST | `/api/v1/admin/ingest/{faa|metar|taf|risk|all}` | Runs ingestion now. Requires `Authorization: Bearer $INGEST_TRIGGER_TOKEN`; returns 404 when no token is configured. |
 
-Historical (`/airports/{code}/history`, `/analytics/overview`) and risk endpoints are
-added with their corresponding phases and documented here when implemented.
+Historical analytics: `GET /api/v1/analytics/overview` and
+`GET /api/v1/airports/{code}/history` (`start`, `end` as `YYYY-MM`, `direction`).
+Risk: `GET /api/v1/risk/airports` and `GET /api/v1/risk/airports/{code}?hours=48`.
